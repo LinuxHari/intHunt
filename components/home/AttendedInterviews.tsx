@@ -1,0 +1,72 @@
+import { Clock, Calendar } from "lucide-react";
+import React from "react";
+import InterviewCard from "../shared/InterviewCard";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+import Link from "next/link";
+
+type AttendedInterviewsProps = {
+  userInterviews: PublishedInterview[] | null;
+  user: User | null;
+};
+
+const AttendedInterviews = ({
+  userInterviews,
+  user,
+}: AttendedInterviewsProps) => {
+  return (
+    <section className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Your Interviews
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Review your completed interviews
+          </p>
+        </div>
+        <Clock className="h-5 w-5 text-gray-400" />
+      </div>
+
+      <Card>
+        <CardContent className="p-6">
+          {userInterviews && userInterviews.length > 0 && user ? (
+            <div className="space-y-4">
+              {userInterviews.map((interview) => (
+                <InterviewCard
+                  key={interview.id}
+                  userId={user.id}
+                  interviewId={interview.id}
+                  role={interview.role}
+                  type={interview.type}
+                  difficulty={interview.difficulty}
+                  level={interview.level}
+                  techstack={interview.techstack}
+                  createdAt={interview.createdAt}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                <Calendar className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">
+                No interviews yet
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                You haven&apos;t taken any interviews yet. Start your first
+                interview to get personalized feedback.
+              </p>
+              <Button asChild>
+                <Link href="/interview">Start Your First Interview</Link>
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </section>
+  );
+};
+
+export default AttendedInterviews;
