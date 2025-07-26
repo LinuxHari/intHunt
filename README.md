@@ -1,2 +1,2 @@
 # intHunt
-An AI interviewer
+An AI interviewer - under development
