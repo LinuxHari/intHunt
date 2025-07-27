@@ -84,25 +84,24 @@ export const getPublishedInterviews = async (
       .collection("interviews")
       .where("userId", "==", user.id);
 
-    const totalCountSnapshot = await baseQuery.get();
-    const totalCounts = totalCountSnapshot.size;
-
-    const publishedInterviews = await baseQuery
-      .select(
-        "difficulty",
-        "createdAt",
-        "questions",
-        "description",
-        "techstack",
-        "attendees",
-        "averageScore",
-        "type",
-        "level",
-        "difficulty"
-      )
-      .offset((page - 1) * offset)
-      .limit(offset)
-      .get();
+    const [totalCountSnapshot, publishedInterviews] = await Promise.all([
+      baseQuery.get(),
+      baseQuery
+        .select(
+          "difficulty",
+          "createdAt",
+          "questions",
+          "description",
+          "techstack",
+          "attendees",
+          "averageScore",
+          "type",
+          "level"
+        )
+        .offset((page - 1) * offset)
+        .limit(offset)
+        .get(),
+    ]);
 
     const interviewsData: PublishedInterview[] = publishedInterviews.docs.map(
       (doc) => ({
@@ -115,7 +114,7 @@ export const getPublishedInterviews = async (
     return {
       success: true,
       publishedInterviews: interviewsData,
-      totalCounts,
+      totalCounts: totalCountSnapshot.size,
     };
   } catch (error: unknown) {
     console.error("Error: Getting published interviews", error);
@@ -131,112 +130,57 @@ export const getUpcomingInterviews = async (
     const user = await getCurrentUser();
     if (!user) throw "User not found";
 
-    const scheduledInterviewsSnapshot = await db
+    const dateFilter = new Date().toISOString();
+    const baseQuery = db
       .collection("scheduledInterviews")
       .where("userId", "==", user.id)
-      .where("scheduledAt", ">", new Date().toISOString())
-      .orderBy("scheduledAt", "asc")
-      .offset((page - 1) * offset)
-      .limit(offset)
-      .get();
+      .where("scheduledAt", ">", dateFilter);
+
+    const [scheduledInterviewsSnapshot, totalCountSnapshot] = await Promise.all(
+      [
+        baseQuery
+          .orderBy("scheduledAt", "asc")
+          .offset((page - 1) * offset)
+          .limit(offset)
+          .get(),
+        baseQuery.get(),
+      ]
+    );
 
     if (scheduledInterviewsSnapshot.empty) {
       return { success: true, upcomingInterviews: [], totalCounts: 0 };
     }
 
     const scheduledInterviews: ScheduledInterview[] =
-      scheduledInterviewsSnapshot.docs.map((doc) => {
-        const data = doc.data() as ScheduledInterviewData;
-        return {
-          id: doc.id,
-          ...data,
-        };
-      });
+      scheduledInterviewsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as ScheduledInterviewData),
+      }));
 
     const interviewIds = scheduledInterviews.map(
       (scheduled) => scheduled.interviewId
     );
-
-    const interviewDetailsMap = new Map<string, InterviewDetailsData>();
-
-    if (interviewIds.length <= 10) {
-      const interviewDetailsSnapshot = await db
-        .collection("interviews")
-        .where("__name__", "in", interviewIds)
-        .select(
-          "role",
-          "questions",
-          "attendees",
-          "averageScore",
-          "createdAt",
-          "type",
-          "level",
-          "difficulty"
-        )
-        .get();
-
-      interviewDetailsSnapshot.docs.forEach((doc) => {
-        const data = doc.data() as InterviewDetailsData;
-        interviewDetailsMap.set(doc.id, data);
-      });
-    } else {
-      const interviewDetailsPromises = interviewIds.map((id) =>
-        db.collection("interviews").doc(id).get()
-      );
-
-      const interviewDetailsSnapshots = await Promise.all(
-        interviewDetailsPromises
-      );
-
-      interviewDetailsSnapshots.forEach((doc, index) => {
-        if (doc.exists) {
-          const data = doc.data();
-          if (data) {
-            const interviewData: InterviewDetailsData = {
-              role: data.role || "Unknown",
-              questions: data.questions || 0,
-              attendees: data.attendees || 0,
-              averageScore: data.averageScore || 0,
-              createdAt: data.createdAt || "",
-              level: data.level,
-              type: data.type,
-              difficulty: data.difficulty,
-              questionCount: data.questionCount,
-              description: data.description,
-              techstack: data.techstack,
-            };
-            interviewDetailsMap.set(interviewIds[index], interviewData);
-          }
-        }
-      });
-    }
+    const interviewDetailsMap = await fetchInterviewDetails(interviewIds);
 
     const upcomingInterviews: UpcomingInterview[] = scheduledInterviews.map(
       (scheduled) => {
-        const interviewData = interviewDetailsMap.get(scheduled.interviewId);
-
+        const interviewData = interviewDetailsMap.get(scheduled.interviewId)!;
         return {
           id: scheduled.interviewId,
-          role: interviewData?.role || "Unknown",
-          questionCount: interviewData?.questionCount || 0,
-          attendees: interviewData?.attendees || 0,
-          averageScore: interviewData?.averageScore || 0,
-          createdAt: interviewData?.createdAt || "",
           scheduledAt: scheduled.scheduledAt,
-          level: interviewData?.level || "junior",
-          type: interviewData?.type || "technical",
-          difficulty: interviewData?.difficulty || "easy",
-          description: interviewData?.description || "",
-          techstack: interviewData?.techstack || [],
+          role: interviewData.role,
+          questionCount: interviewData.questionCount,
+          attendees: interviewData.attendees,
+          averageScore: interviewData.averageScore,
+          createdAt: interviewData.createdAt,
+          level: interviewData.level,
+          type: interviewData.type,
+          difficulty: interviewData.difficulty,
+          description: interviewData.description,
+          techstack: interviewData.techstack,
         };
       }
     );
-
-    const totalCountSnapshot = await db
-      .collection("scheduledInterviews")
-      .where("userId", "==", user.id)
-      .where("scheduledAt", ">", new Date().toISOString())
-      .get();
 
     return {
       success: true,
@@ -257,92 +201,52 @@ export const getAttendedInterviews = async (
     const user = await getCurrentUser();
     if (!user) throw "User not found";
 
-    const attendedInterviewsSnapshot = await db
+    const baseQuery = db
       .collection("attendedInterviews")
-      .where("userId", "==", user.id)
-      .orderBy("attendedAt", "desc")
-      .offset((page - 1) * offset)
-      .limit(offset)
-      .get();
+      .where("userId", "==", user.id);
+
+    const [attendedInterviewsSnapshot, totalCountSnapshot] = await Promise.all([
+      baseQuery
+        .orderBy("attendedAt", "desc")
+        .offset((page - 1) * offset)
+        .limit(offset)
+        .get(),
+      baseQuery.get(),
+    ]);
 
     if (attendedInterviewsSnapshot.empty) {
       return { success: true, attendedInterviews: [], totalCounts: 0 };
     }
 
     const attendedInterviews: AttendedInterviewDoc[] =
-      attendedInterviewsSnapshot.docs.map((doc) => {
-        const data = doc.data() as AttendedInterviewData;
-        return {
-          id: doc.id,
-          ...data,
-        };
-      });
+      attendedInterviewsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as AttendedInterviewData),
+      }));
 
     const interviewIds = attendedInterviews.map(
       (attended) => attended.interviewId
     );
-
-    const interviewDetailsMap = new Map<string, AttendedInterviewDetailsData>();
-
-    if (interviewIds.length <= 10) {
-      const interviewDetailsSnapshot = await db
-        .collection("interviews")
-        .where("__name__", "in", interviewIds)
-        .select("type", "role", "techStack")
-        .get();
-
-      interviewDetailsSnapshot.docs.forEach((doc) => {
-        const data = doc.data() as AttendedInterviewDetailsData;
-        interviewDetailsMap.set(doc.id, data);
-      });
-    } else {
-      const interviewDetailsPromises = interviewIds.map((id) =>
-        db.collection("interviews").doc(id).get()
-      );
-
-      const interviewDetailsSnapshots = await Promise.all(
-        interviewDetailsPromises
-      );
-
-      interviewDetailsSnapshots.forEach((doc, index) => {
-        if (doc.exists) {
-          const data = doc.data();
-          if (data) {
-            const interviewData: AttendedInterviewDetailsData = {
-              type: data.type || "technical",
-              level: data.level,
-              role: data.role || "Unknown",
-              difficulty: data.difficulty,
-              techStack: data.techStack || [],
-            };
-            interviewDetailsMap.set(interviewIds[index], interviewData);
-          }
-        }
-      });
-    }
+    const interviewDetailsMap = await fetchAttendedInterviewDetails(
+      interviewIds
+    );
 
     const attendedInterviewsData: AttendedInterview[] = attendedInterviews.map(
       (attended) => {
-        const interviewData = interviewDetailsMap.get(attended.interviewId);
-
+        const interviewData = interviewDetailsMap.get(attended.interviewId)!;
         return {
           id: attended.interviewId,
-          role: interviewData?.role || "Unknown",
-          type: interviewData?.type || "technical",
           attendedAt: attended.attendedAt,
           score: attended.score,
           feedback: attended.feedback,
-          techStack: interviewData?.techStack || [],
-          level: interviewData?.level || "junior",
-          difficulty: interviewData?.difficulty || "easy",
+          role: interviewData.role,
+          type: interviewData.type,
+          level: interviewData.level,
+          difficulty: interviewData.difficulty,
+          techStack: interviewData.techStack,
         };
       }
     );
-
-    const totalCountSnapshot = await db
-      .collection("attendedInterviews")
-      .where("userId", "==", user.id)
-      .get();
 
     return {
       success: true,
@@ -353,6 +257,116 @@ export const getAttendedInterviews = async (
     console.error("Error getting attended interviews:", error);
     return { success: false, message: error };
   }
+};
+
+const fetchInterviewDetails = async (
+  interviewIds: string[]
+): Promise<Map<string, InterviewDetailsData>> => {
+  const interviewDetailsMap = new Map();
+
+  if (interviewIds.length <= 10) {
+    const snapshot = await db
+      .collection("interviews")
+      .where("__name__", "in", interviewIds)
+      .select(
+        "role",
+        "questions",
+        "attendees",
+        "averageScore",
+        "createdAt",
+        "type",
+        "level",
+        "difficulty",
+        "questionCount",
+        "description",
+        "techstack"
+      )
+      .get();
+
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data()!;
+      interviewDetailsMap.set(doc.id, {
+        role: data.role,
+        questionCount: data.questionCount,
+        attendees: data.attendees,
+        averageScore: data.averageScore,
+        createdAt: data.createdAt,
+        level: data.level,
+        type: data.type,
+        difficulty: data.difficulty,
+        description: data.description,
+        techstack: data.techstack,
+      });
+    });
+  } else {
+    const snapshots = await Promise.all(
+      interviewIds.map((id) => db.collection("interviews").doc(id).get())
+    );
+
+    snapshots.forEach((doc, index) => {
+      if (doc.exists) {
+        const data = doc.data()!;
+        interviewDetailsMap.set(interviewIds[index], {
+          role: data.role,
+          questionCount: data.questionCount,
+          attendees: data.attendees,
+          averageScore: data.averageScore,
+          createdAt: data.createdAt,
+          level: data.level,
+          type: data.type,
+          difficulty: data.difficulty,
+          description: data.description,
+          techstack: data.techstack,
+        });
+      }
+    });
+  }
+
+  return interviewDetailsMap;
+};
+
+const fetchAttendedInterviewDetails = async (
+  interviewIds: string[]
+): Promise<Map<string, AttendedInterviewDetailsData>> => {
+  const interviewDetailsMap = new Map();
+
+  if (interviewIds.length <= 10) {
+    const snapshot = await db
+      .collection("interviews")
+      .where("__name__", "in", interviewIds)
+      .select("type", "role", "techStack", "level", "difficulty")
+      .get();
+
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data()!;
+      interviewDetailsMap.set(doc.id, {
+        type: data.type,
+        level: data.level,
+        role: data.role,
+        difficulty: data.difficulty,
+        techStack: data.techStack,
+      });
+    });
+  } else {
+    const snapshots = await Promise.all(
+      interviewIds.map((id) => db.collection("interviews").doc(id).get())
+    );
+
+    snapshots.forEach((doc, index) => {
+      if (doc.exists) {
+        const data = doc.data()!;
+        interviewDetailsMap.set(interviewIds[index], {
+          type: data.type,
+          level: data.level,
+          role: data.role,
+          difficulty: data.difficulty,
+          techStack: data.techStack,
+        });
+      }
+    });
+  }
+
+  return interviewDetailsMap;
 };
 
 export const getInterviewsWithQuery = async ({

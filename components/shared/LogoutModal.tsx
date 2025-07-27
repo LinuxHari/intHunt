@@ -22,7 +22,7 @@ interface LogoutModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export default function LogoutModal({ open, onOpenChange }: LogoutModalProps) {
+const LogoutModal = ({ open, onOpenChange }: LogoutModalProps) => {
   const router = useRouter();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -87,4 +87,6 @@ export default function LogoutModal({ open, onOpenChange }: LogoutModalProps) {
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export default LogoutModal;

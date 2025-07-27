@@ -33,7 +33,6 @@ const Feedback = async ({ params }: RouteParams) => {
 
       <div className="flex flex-row justify-center ">
         <div className="flex flex-row gap-5">
-          {/* Overall Impression */}
           <div className="flex flex-row gap-2 items-center">
             <Image src="/star.svg" width={22} height={22} alt="star" />
             <p>
@@ -44,8 +43,7 @@ const Feedback = async ({ params }: RouteParams) => {
               /100
             </p>
           </div>
-
-          {/* Date */}
+          ={" "}
           <div className="flex flex-row gap-2">
             <Image src="/calendar.svg" width={22} height={22} alt="calendar" />
             <p>

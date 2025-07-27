@@ -25,7 +25,7 @@ interface MobileNavigationProps {
   } | null;
 }
 
-export default function MobileNavigation({ user }: MobileNavigationProps) {
+const MobileNavigation = ({ user }: MobileNavigationProps) => {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const openLogoutModal = () => {
@@ -130,4 +130,6 @@ export default function MobileNavigation({ user }: MobileNavigationProps) {
       <LogoutModal open={logoutModalOpen} onOpenChange={setLogoutModalOpen} />
     </div>
   );
-}
+};
+
+export default MobileNavigation;

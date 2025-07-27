@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 
 const SESSION_DURATION = 60 * 60 * 24 * 7;
 
-export async function setSessionCookie(idToken: string) {
+export const setSessionCookie = async (idToken: string) => {
   const cookieStore = await cookies();
 
   const sessionCookie = await auth.createSessionCookie(idToken, {
@@ -21,9 +21,9 @@ export async function setSessionCookie(idToken: string) {
     path: "/",
     sameSite: "lax",
   });
-}
+};
 
-export async function signUp(params: SignUpParams) {
+export const signUp = async (params: SignUpParams) => {
   const { uid, name, email } = params;
 
   try {
@@ -74,9 +74,9 @@ export async function signUp(params: SignUpParams) {
       message: "Failed to create account. Please try again.",
     };
   }
-}
+};
 
-export async function signIn(params: SignInParams) {
+export const signIn = async (params: SignInParams) => {
   const { email, idToken } = params;
 
   try {
@@ -96,14 +96,14 @@ export async function signIn(params: SignInParams) {
       message: "Failed to log into account. Please try again.",
     };
   }
-}
+};
 
-export async function signOut() {
+export const signOut = async () => {
   const cookieStore = await cookies();
   cookieStore.delete("session");
-}
+};
 
-export async function getCurrentUser(): Promise<User | null> {
+export const getCurrentUser = async (): Promise<User | null> => {
   const cookieStore = await cookies();
 
   const sessionCookie = cookieStore.get("session")?.value;
@@ -131,9 +131,9 @@ export async function getCurrentUser(): Promise<User | null> {
     console.error(error);
     return null;
   }
-}
+};
 
-export async function isAuthenticated() {
+export const isAuthenticated = async () => {
   const user = await getCurrentUser();
   return !!user;
-}
+};

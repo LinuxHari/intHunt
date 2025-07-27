@@ -8,10 +8,7 @@ interface DisplayTechIconsProps {
   className?: string;
 }
 
-export default function DisplayTechIcons({
-  techStack,
-  className,
-}: DisplayTechIconsProps) {
+const DisplayTechIcons = ({ techStack, className }: DisplayTechIconsProps) => {
   if (!techStack) return null;
 
   const displayTechs = techStack.slice(0, 3);
@@ -38,4 +35,6 @@ export default function DisplayTechIcons({
       )}
     </div>
   );
-}
+};
+
+export default DisplayTechIcons;

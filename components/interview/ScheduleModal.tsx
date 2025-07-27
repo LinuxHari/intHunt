@@ -22,11 +22,11 @@ interface ScheduleModalProps {
   interview: Interview;
 }
 
-export default function ScheduleModal({
+const ScheduleModal = ({
   open,
   onOpenChange,
   interview,
-}: ScheduleModalProps) {
+}: ScheduleModalProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [customTime, setCustomTime] = useState<string>("");
@@ -35,19 +35,17 @@ export default function ScheduleModal({
 
   if (!interview) return null;
 
-  // Generate calendar days for current month
   const generateCalendarDays = () => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
 
     const firstDay = new Date(year, month, 1);
     const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay()); // Start from Sunday
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
 
     const days = [];
     const currentDate = new Date(startDate);
 
-    // Generate 42 days (6 weeks) to fill the calendar grid
     for (let i = 0; i < 42; i++) {
       days.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
@@ -154,7 +152,6 @@ export default function ScheduleModal({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Interview Details */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">{interview.role}</CardTitle>
@@ -175,13 +172,11 @@ export default function ScheduleModal({
           </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Date Selection */}
             <div className="space-y-4">
               <h3 className="font-semibold text-slate-900 dark:text-white">
                 Select Date
               </h3>
 
-              {/* Calendar Header */}
               <div className="flex items-center justify-between">
                 <Button
                   variant="outline"
@@ -204,9 +199,7 @@ export default function ScheduleModal({
                 </Button>
               </div>
 
-              {/* Calendar Grid */}
               <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4">
-                {/* Week days header */}
                 <div className="grid grid-cols-7 gap-1 mb-2">
                   {weekDays.map((day) => (
                     <div
@@ -218,7 +211,6 @@ export default function ScheduleModal({
                   ))}
                 </div>
 
-                {/* Calendar days */}
                 <div className="grid grid-cols-7 gap-1">
                   {calendarDays.map((date, index) => {
                     const disabled = isDateDisabled(date);
@@ -259,14 +251,11 @@ export default function ScheduleModal({
                 </div>
               )}
             </div>
-
-            {/* Time Selection */}
             <div className="space-y-4">
               <h3 className="font-semibold text-slate-900 dark:text-white">
                 Select Time
               </h3>
 
-              {/* Time input toggle */}
               <div className="grid grid-cols-2 gap-4">
                 <Button
                   variant={!useCustomTime ? "default" : "outline"}
@@ -291,7 +280,6 @@ export default function ScheduleModal({
               </div>
 
               {!useCustomTime ? (
-                /* Preset time slots */
                 <div className="grid grid-cols-3 gap-2">
                   {timeSlots.map((time) => {
                     const isSelected = selectedTime === time;
@@ -313,7 +301,6 @@ export default function ScheduleModal({
                   })}
                 </div>
               ) : (
-                /* Custom time input */
                 <div className="space-y-2">
                   <Input
                     type="time"
@@ -335,7 +322,6 @@ export default function ScheduleModal({
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3 pt-4">
             <Button
               variant="outline"
@@ -356,4 +342,6 @@ export default function ScheduleModal({
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export default ScheduleModal;

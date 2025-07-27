@@ -7,11 +7,11 @@ interface InterviewCardStatsProps {
   questions: number;
 }
 
-export default function InterviewCardStats({
+const InterviewCardStats = ({
   rating,
   attendees,
   questions,
-}: InterviewCardStatsProps) {
+}: InterviewCardStatsProps) => {
   return (
     <div className="flex gap-4 text-sm">
       <div className="flex items-center gap-1">
@@ -38,4 +38,6 @@ export default function InterviewCardStats({
       </div> */}
     </div>
   );
-}
+};
+
+export default InterviewCardStats;

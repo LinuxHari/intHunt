@@ -23,14 +23,14 @@ interface InterviewsFiltersProps {
   ) => void;
 }
 
-export default function InterviewsFilters({
+const InterviewsFilters = ({
   searchQuery,
   onSearchChange,
   typeFilter,
   onTypeFilterChange,
   sortBy,
   onSortByChange,
-}: InterviewsFiltersProps) {
+}: InterviewsFiltersProps) => {
   return (
     <Card>
       <CardContent className="p-6">
@@ -75,4 +75,6 @@ export default function InterviewsFilters({
       </CardContent>
     </Card>
   );
-}
+};
+
+export default InterviewsFilters;
