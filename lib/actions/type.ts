@@ -1,5 +1,3 @@
-import { defaultUserStat } from "@/constants";
-
 export interface CatchReturn {
   success: false;
   message: unknown;
@@ -11,9 +9,20 @@ export type ReturnPublishedInterviews = {
   totalCounts: number;
 };
 
+interface AnalyticsRecord {
+  count: number;
+  averageScore: number;
+  totalScore: number;
+  totalQuestions: number;
+}
+
 export type ReturnUserAnalytics = {
   success: true;
-  analytics: (typeof defaultUserStat)["analytics"];
+  analytics: {
+    week: Record<string, AnalyticsRecord>;
+    month: Record<string, AnalyticsRecord>;
+    year: Record<string, AnalyticsRecord>;
+  };
 };
 
 export type ReturnUserRecents = {
@@ -28,22 +37,37 @@ export type ReturnUserRecents = {
 
 export type ReturnUpcoming = {
   success: true;
-  upcomingStats: (typeof defaultUserStat)["upcoming"];
+  upcomingStats: {
+    totalScheduled: number;
+    dueToday: number;
+    averageQuestions: number;
+  };
 };
 
 export type ReturnPublished = {
   success: true;
-  publishedStats: (typeof defaultUserStat)["published"];
+  publishedStats: {
+    totalPublished: number;
+    totalAttendees: number;
+    active: number;
+  };
 };
 
 export interface ReturnAttended {
   success: true;
-  attendedStats: (typeof defaultUserStat)["attended"];
+  attendedStats: {
+    averageScore: number;
+    averageQuestions: number;
+    completed: number;
+  };
 }
 
 export interface ReturnProfile {
   success: true;
-  profileStats: (typeof defaultUserStat)["profile"] & {
+  profileStats: {
+    interviewsTaken: number;
+    interviewsCreated: number;
+    memberSince: string;
     averageScore: number;
   };
 }
@@ -120,4 +144,12 @@ export type ReturnInterviewSearch = {
   interviews: Interview[];
   totalCount: number;
   hasNextPage: boolean;
+};
+
+export type ScheduleDetails = {
+  interviewId: string;
+  role: string;
+  date: string;
+  time: string;
+  timezone: string;
 };

@@ -1,6 +1,5 @@
 "use server";
 
-import { defaultUserStat } from "@/constants";
 import { auth, db } from "@/firebase/admin";
 import { FirebaseError } from "firebase/app";
 import { cookies } from "next/headers";
@@ -34,22 +33,9 @@ export const signUp = async (params: SignUpParams) => {
         message: "User already exists. Please sign in.",
       };
 
-    await db.runTransaction(async (transaction) => {
-      const userRef = db.collection("users").doc(uid);
-      const userStatsRef = db.collection("userstats").doc();
-
-      const { profile, ...userStats } = defaultUserStat;
-
-      transaction.set(userRef, {
-        name,
-        email,
-      });
-
-      transaction.set(userStatsRef, {
-        userId: uid,
-        ...userStats,
-        profile: { ...profile, memberSince: new Date().toISOString() },
-      });
+    await db.collection("users").doc(uid).set({
+      name,
+      email,
     });
 
     return {

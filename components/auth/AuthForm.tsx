@@ -139,7 +139,13 @@ const AuthForm = ({ type }: { type: FormType }) => {
               type="submit"
               disabled={form.formState.isSubmitting}
             >
-              {isSignIn ? "Sign In" : "Create an Account"}
+              {isSignIn
+                ? form.formState.isSubmitting
+                  ? "Signing In"
+                  : "Sign In"
+                : form.formState.isSubmitting
+                ? "Creating an Account"
+                : "Create an Account"}
             </Button>
           </form>
         </Form>

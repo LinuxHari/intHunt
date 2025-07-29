@@ -14,6 +14,7 @@ import {
   ReturnInterviewSearch,
   ReturnPublishedInterviews,
   ReturnUpcomingInterviews,
+  ScheduleDetails,
   ScheduledInterview,
   ScheduledInterviewData,
 } from "./type";
@@ -130,16 +131,16 @@ export const getUpcomingInterviews = async (
     const user = await getCurrentUser();
     if (!user) throw "User not found";
 
-    const dateFilter = new Date().toISOString();
+    const dateFilter = Date.now();
     const baseQuery = db
       .collection("scheduledInterviews")
+      .orderBy("scheduledAt", "asc")
       .where("userId", "==", user.id)
       .where("scheduledAt", ">", dateFilter);
 
     const [scheduledInterviewsSnapshot, totalCountSnapshot] = await Promise.all(
       [
         baseQuery
-          .orderBy("scheduledAt", "asc")
           .offset((page - 1) * offset)
           .limit(offset)
           .get(),
@@ -465,7 +466,36 @@ export const getInterviewsWithQuery = async ({
     console.error("Error fetching interviews:", error);
     return {
       success: false,
-      message: error,
+      message: "",
     };
+  }
+};
+
+export const scheduleInterview = async (scheduleDetails: ScheduleDetails) => {
+  try {
+    const { interviewId, role, date, time, timezone } = scheduleDetails;
+
+    const user = await getCurrentUser();
+
+    if (!user) throw "Please log in to schedule interviews";
+
+    const epochTime = new Date(`${date}T${time}:00`).getTime();
+
+    const scheduledRef = db.collection("scheduledInterviews").doc();
+
+    await scheduledRef.set({
+      interviewId,
+      userId: user.id,
+      email: user.email,
+      role,
+      scheduledAt: epochTime,
+      createdAt: Date.now(),
+      timezone,
+    });
+
+    return { success: true };
+  } catch (error: unknown) {
+    console.error(error, "error occured while scheduling interview");
+    return { success: false, error: typeof error === "string" ? error : null };
   }
 };

@@ -3,7 +3,8 @@ import { useRouter } from "next/navigation";
 
 import { vapi } from "@/lib/vapi.sdk";
 import { interviewer } from "@/constants";
-import { createFeedback } from "@/lib/actions/general.action";
+import { manageInterviewCompletion } from "@/lib/actions/general.action";
+import { toast } from "sonner";
 
 export enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -82,10 +83,10 @@ const useInterviewAgent = ({
       setLastMessage(messages[messages.length - 1].content);
     }
 
-    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+    const handleInterviewCompletion = async (messages: SavedMessage[]) => {
       console.log("handleGenerateFeedback");
 
-      const { success, feedbackId: id } = await createFeedback({
+      const { success, feedbackId: id } = await manageInterviewCompletion({
         interviewId: interviewId!,
         userId: user.id,
         transcript: messages,
@@ -95,7 +96,7 @@ const useInterviewAgent = ({
       if (success && id) {
         router.push(`/interview/${interviewId}/feedback`);
       } else {
-        console.log("Error saving feedback");
+        toast.error("Error saving feedback");
         router.push("/");
       }
     };
@@ -104,7 +105,7 @@ const useInterviewAgent = ({
       if (type === "generate") {
         router.push("/");
       } else {
-        handleGenerateFeedback(messages);
+        handleInterviewCompletion(messages);
       }
     }
   }, [messages, callStatus, feedbackId, interviewId, router, type, user.id]);

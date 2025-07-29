@@ -6,7 +6,9 @@ import { google } from "@ai-sdk/google";
 import { db } from "@/firebase/admin";
 import { feedbackSchema } from "@/constants";
 
-export const createFeedback = async (params: CreateFeedbackParams) => {
+export const manageInterviewCompletion = async (
+  params: CreateFeedbackParams
+) => {
   const { interviewId, userId, transcript, feedbackId } = params;
 
   try {
@@ -37,27 +39,46 @@ export const createFeedback = async (params: CreateFeedbackParams) => {
       system:
         "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
     });
+    const feedbackRef = feedbackId
+      ? db.collection("feedback").doc(feedbackId)
+      : db.collection("feedback").doc();
+    await db.runTransaction(async (transaction) => {
+      const feedback = {
+        interviewId,
+        userId,
+        totalScore: object.totalScore,
+        categoryScores: object.categoryScores,
+        strengths: object.strengths,
+        areasForImprovement: object.areasForImprovement,
+        finalAssessment: object.finalAssessment,
+        createdAt: new Date().toISOString(),
+      };
 
-    const feedback = {
-      interviewId: interviewId,
-      userId: userId,
-      totalScore: object.totalScore,
-      categoryScores: object.categoryScores,
-      strengths: object.strengths,
-      areasForImprovement: object.areasForImprovement,
-      finalAssessment: object.finalAssessment,
-      createdAt: new Date().toISOString(),
-    };
+      transaction.set(feedbackRef, feedback);
 
-    let feedbackRef;
+      const interviewQuerySnapshot = await transaction.get(
+        db.collection("interviews").where("userId", "==", userId)
+      );
 
-    if (feedbackId) {
-      feedbackRef = db.collection("feedback").doc(feedbackId);
-    } else {
-      feedbackRef = db.collection("feedback").doc();
-    }
+      if (interviewQuerySnapshot.empty) {
+        throw new Error("Interview document not found for this user");
+      }
 
-    await feedbackRef.set(feedback);
+      const interviewDoc = interviewQuerySnapshot.docs[0];
+      const interviewRef = interviewDoc.ref;
+      const interviewData = interviewDoc.data();
+
+      const oldCount = interviewData.attendeesCount || 0;
+      const oldTotalScore = (interviewData.averageScore || 0) * oldCount;
+
+      const newCount = oldCount + 1;
+      const newAverageScore = (oldTotalScore + object.totalScore) / newCount;
+
+      transaction.update(interviewRef, {
+        attendeesCount: newCount,
+        averageScore: newAverageScore,
+      });
+    });
 
     return { success: true, feedbackId: feedbackRef.id };
   } catch (error) {
