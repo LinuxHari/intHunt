@@ -4,17 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import DisplayTechIcons from "@/components/shared/DisplayTechIcons";
 import InterviewCardStats from "./interviewCardStats";
 import InterviewBadges from "../dashboard/publishedInterviews/InterviewBadges";
+import Link from "next/link";
 
 interface BrowseInterviewCardProps {
   interview: Interview;
   onSchedule: (interview: Interview) => void;
-  onAttendNow: (interview: Interview) => void;
+  onSelect: (interview: Interview) => void;
 }
 
 const InterviewCard = ({
   interview,
   onSchedule,
-  onAttendNow,
+  onSelect,
 }: BrowseInterviewCardProps) => {
   return (
     <Card className="hover:shadow-lg transition-all duration-200">
@@ -44,10 +45,15 @@ const InterviewCard = ({
           <DisplayTechIcons techStack={interview.techstack} />
 
           <div className="flex gap-2">
-            <Button className="flex-1" onClick={() => onAttendNow(interview)}>
-              <Play className="h-4 w-4 mr-2" />
-              Attend Now
-            </Button>
+            <Link
+              href={`/interviews/${interview.id}`}
+              onClick={() => onSelect(interview)}
+            >
+              <Button className="flex-1">
+                <Play className="h-4 w-4 mr-2" />
+                Attend Now
+              </Button>
+            </Link>
             <Button
               variant="outline"
               className="flex-1"

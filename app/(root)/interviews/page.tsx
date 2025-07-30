@@ -1,4 +1,5 @@
 import InterviewsPage from "@/components/interviews/InterviewsPage";
+import { getCurrentUser } from "@/lib/actions/auth.action";
 import { getInterviewsWithQuery } from "@/lib/actions/interview.action";
 import { InterviewSearchParams } from "@/lib/actions/type";
 
@@ -21,9 +22,17 @@ const Interviews = async ({ searchParams }: InterviewsPageProps) => {
     sortType: params.sortType,
   });
 
+  const user = await getCurrentUser();
+
   if (!interviews.success) throw "Something went wrong";
 
-  return <InterviewsPage interviews={interviews} searchParams={params} />;
+  return (
+    <InterviewsPage
+      interviews={interviews}
+      searchParams={params}
+      userId={user?.id}
+    />
+  );
 };
 
 export default Interviews;

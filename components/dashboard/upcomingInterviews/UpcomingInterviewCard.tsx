@@ -3,15 +3,18 @@ import { Calendar, Notebook, Play } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn, getTimeUntil, getTypeConfig } from "@/lib/utils";
+import { getTimeUntil } from "@/lib/utils";
+import InterviewBadges from "../publishedInterviews/InterviewBadges";
+import Link from "next/link";
 
 const UpcomingInterviewCard = ({
   interview,
 }: {
   interview: UpcomingInterview;
 }) => {
-  const typeConfig = getTypeConfig(interview.type);
-  const formattedDate = dayjs(interview.scheduledAt).format("MMM D, YYYY");
+  const formattedDate = dayjs(interview.scheduledAt).format(
+    "MMM D, YYYY hh:mm A"
+  );
   const timeUntil = getTimeUntil(interview.scheduledAt);
 
   return (
@@ -25,10 +28,12 @@ const UpcomingInterviewCard = ({
                 {interview.role}
               </h3>
               <div className="flex items-center gap-2 mt-1">
-                <Badge className={cn("text-xs", typeConfig.color)}>
-                  {interview.type}
-                </Badge>
-                <Badge className="text-xs bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800">
+                <InterviewBadges
+                  difficulty={interview.difficulty}
+                  level={interview.level}
+                  type={interview.type}
+                />
+                <Badge className="text-xs py-1 px-2 leading-tight capitalize bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800">
                   {timeUntil}
                 </Badge>
               </div>
@@ -62,10 +67,12 @@ const UpcomingInterviewCard = ({
           </div>
 
           {/* Action */}
-          <Button className="w-full">
-            <Play className="h-4 w-4 mr-2" />
-            Start Interview
-          </Button>
+          <Link href={`/interview/${interview.id}`}>
+            <Button className="w-full">
+              <Play className="h-4 w-4 mr-1" />
+              Start Interview
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>

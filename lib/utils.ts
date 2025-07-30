@@ -1,5 +1,6 @@
 // import { interviewCovers, mappings } from "@/constants";
 import { clsx, type ClassValue } from "clsx";
+import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 
 export const cn = (...inputs: ClassValue[]) => {
@@ -109,16 +110,20 @@ export const getDifficultyConfig = (difficulty: Interview["difficulty"]) => {
   return configs[difficulty as keyof typeof configs];
 };
 
-export const getTimeUntil = (date: string): string => {
-  const now = new Date();
-  const diff = new Date(date).getTime() - now.getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+export function getTimeUntil(date: string | number | Date): string {
+  const now = dayjs();
+  const target = dayjs(date);
+  const diffInMs = target.diff(now);
+
+  const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(
+    (diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
 
   if (days > 0) return `in ${days} day${days > 1 ? "s" : ""}`;
   if (hours > 0) return `in ${hours} hour${hours > 1 ? "s" : ""}`;
   return "starting soon";
-};
+}
 
 export const getInterviewsDueToday = (
   interviews: UpcomingInterview[]

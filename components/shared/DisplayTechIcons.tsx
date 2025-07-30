@@ -6,13 +6,18 @@ import { cn } from "@/lib/utils";
 interface DisplayTechIconsProps {
   techStack: string[];
   className?: string;
+  slice?: boolean;
 }
 
-const DisplayTechIcons = ({ techStack, className }: DisplayTechIconsProps) => {
+const DisplayTechIcons = ({
+  techStack,
+  className,
+  slice = true,
+}: DisplayTechIconsProps) => {
   if (!techStack) return null;
 
-  const displayTechs = techStack.slice(0, 3);
-  const remainingCount = techStack.length - 3;
+  const displayTechs = slice ? techStack.slice(0, 3) : techStack;
+  const remainingCount = slice ? techStack.length - 3 : 0;
 
   return (
     <div className={cn("flex flex-wrap gap-1.5 justify-center", className)}>

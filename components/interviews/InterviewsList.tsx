@@ -3,13 +3,13 @@ import InterviewCard from "./InterviewCard";
 interface InterviewsGridProps {
   interviews: Interview[];
   onSchedule: (interview: Interview) => void;
-  onAttendNow: (interview: Interview) => void;
+  onSelect: (interview: Interview) => void;
 }
 
 const InterviewsList = ({
   interviews,
   onSchedule,
-  onAttendNow,
+  onSelect,
 }: InterviewsGridProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -18,7 +18,7 @@ const InterviewsList = ({
           key={interview.id}
           interview={interview}
           onSchedule={onSchedule}
-          onAttendNow={onAttendNow}
+          onSelect={onSelect}
         />
       ))}
     </div>

@@ -1,6 +1,7 @@
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { Mona_Sans } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${monaSans.className} antialiased`}>
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID as string} />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

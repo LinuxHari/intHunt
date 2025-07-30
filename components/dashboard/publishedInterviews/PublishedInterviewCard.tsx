@@ -54,7 +54,7 @@ const PublishedInterviewCard = ({
       </CardContent>
       <div className="grid grid-cols-2 w-full">
         <Link
-          href={`/interviews/${interview.id}`}
+          href={`/interview/${interview.id}`}
           className="flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
         >
           <Eye className="h-4 w-4" />

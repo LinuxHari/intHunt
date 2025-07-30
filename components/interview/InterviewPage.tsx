@@ -47,7 +47,10 @@ const InterviewPage = ({
                       </p>
                     </div>
                   </div>
-                  <DisplayTechIcons techStack={interview.techstack} />
+                  <DisplayTechIcons
+                    techStack={interview.techstack}
+                    slice={false}
+                  />
                 </div>
 
                 <div className="flex gap-2">

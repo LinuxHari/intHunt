@@ -7,15 +7,19 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import useAnalytics from "@/hooks/useAnalytics";
 
 const SearchHero = () => {
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const { searchAnalytics } = useAnalytics();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
-      router.push(`/interviews?search=${encodeURIComponent(query.trim())}`);
+    const trimmedQuery = query.trim();
+    if (trimmedQuery) {
+      searchAnalytics(trimmedQuery);
+      router.push(`/interviews?search=${encodeURIComponent(trimmedQuery)}`);
     }
   };
 
