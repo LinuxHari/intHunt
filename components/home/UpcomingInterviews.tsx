@@ -1,5 +1,4 @@
 import { Users } from "lucide-react";
-import React from "react";
 import InterviewCard from "../shared/InterviewCard";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";

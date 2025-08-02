@@ -67,7 +67,7 @@ interface AttendedInterview extends BaseInterview {
   techStack: string[];
 }
 
-interface CreateFeedbackParams {
+interface InterviewCompletionParams {
   interviewId: string;
   userId: string;
   transcript: { role: string; content: string }[];
@@ -92,10 +92,9 @@ interface InterviewCardProps {
 
 interface AgentProps {
   user: User;
-  interviewId?: string;
+  interview: Interview;
   feedbackId?: string;
   type: "generate" | "interview";
-  questions?: string[];
 }
 
 interface RouteParams {

@@ -1,18 +1,15 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import useAnalytics from "@/hooks/useAnalytics";
+import { searchAnalytics } from "@/lib/analytics";
 
 const SearchHero = () => {
   const [query, setQuery] = useState("");
   const router = useRouter();
-  const { searchAnalytics } = useAnalytics();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

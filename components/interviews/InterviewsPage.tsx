@@ -5,7 +5,7 @@ import InterviewsFilters from "./InterviewsFilter";
 import InterviewsHeader from "./InterviewsHeader";
 import InterviewsList from "./InterviewsList";
 import NoInterviews from "./NoInterviews";
-import ScheduleModal from "../interview/ScheduleModal";
+import ScheduleModal from "../interview/schedule/ScheduleModal";
 import useInterviews, { InterviewsPageProps } from "@/hooks/useInterviews";
 
 const InterviewsPage = ({

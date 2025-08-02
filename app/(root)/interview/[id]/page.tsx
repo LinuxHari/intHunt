@@ -24,12 +24,7 @@ const Interview = async ({ params }: RouteParams) => {
   });
 
   return (
-    <InterviewPage
-      user={user}
-      interview={interview}
-      feedback={feedback}
-      interviewId={id}
-    />
+    <InterviewPage user={user} interview={interview} feedback={feedback} />
   );
 };
 

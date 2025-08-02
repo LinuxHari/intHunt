@@ -13,15 +13,9 @@ interface InterviewPageProps {
   feedback: Feedback | null;
   interview: Interview;
   user: User;
-  interviewId: string;
 }
 
-const InterviewPage = ({
-  interview,
-  feedback,
-  user,
-  interviewId,
-}: InterviewPageProps) => {
+const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="container px-4 py-8 w-full">
@@ -89,9 +83,8 @@ const InterviewPage = ({
             <CardContent className="p-8">
               <Agent
                 user={user}
-                interviewId={interviewId}
                 type="interview"
-                questions={interview.questions}
+                interview={interview}
                 feedbackId={feedback?.id}
               />
             </CardContent>

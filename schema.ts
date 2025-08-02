@@ -41,7 +41,36 @@ export const passwordSchema = z
     path: ["confirmPassword"],
   });
 
+export const scheduleFormSchema = z
+  .object({
+    date: z.date({
+      required_error: "Please select a date for the interview.",
+    }),
+    timeType: z.enum(["preset", "custom"], {
+      required_error: "Please select a time type.",
+    }),
+    presetTime: z.string().optional(),
+    customTime: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.timeType === "preset" && !data.presetTime) {
+        return false;
+      }
+      if (data.timeType === "custom" && !data.customTime) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Please select a time for the interview.",
+      path: ["presetTime"],
+    }
+  );
+
 export type ProfileFormType = z.infer<typeof profileSchema>;
 export type PasswordFormType = z.infer<typeof passwordSchema>;
 
 export type CreateInterviewFormType = z.infer<typeof createInterviewSchema>;
+
+export type ScheduleFormType = z.infer<typeof scheduleFormSchema>;

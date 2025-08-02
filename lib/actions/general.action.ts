@@ -7,7 +7,7 @@ import { db } from "@/firebase/admin";
 import { feedbackSchema } from "@/constants";
 
 export const manageInterviewCompletion = async (
-  params: CreateFeedbackParams
+  params: InterviewCompletionParams
 ) => {
   const { interviewId, userId, transcript, feedbackId } = params;
 

@@ -2,12 +2,12 @@ import { useState, useTransition, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { getInterviewsWithQuery } from "@/lib/actions/interview.action";
-import useAnalytics from "./useAnalytics";
 import { InterviewsPageParams } from "@/app/(root)/interviews/page";
 import {
   InterviewSearchParams,
   ReturnInterviewSearch,
 } from "@/lib/actions/type";
+import { clickAnalytics, scheduleAnalytics } from "@/lib/analytics";
 
 export interface InterviewsPageProps {
   searchParams: InterviewsPageParams;
@@ -29,7 +29,11 @@ interface LoadInterviewParams {
 
 type Interview = ReturnInterviewSearch["interviews"][0];
 
-const useInterviews = ({ interviews, searchParams }: InterviewsPageProps) => {
+const useInterviews = ({
+  interviews,
+  searchParams,
+  userId,
+}: InterviewsPageProps) => {
   const pathname = usePathname();
 
   const [interviewsList, setInterviewsList] = useState<Interview[]>(
@@ -53,8 +57,6 @@ const useInterviews = ({ interviews, searchParams }: InterviewsPageProps) => {
 
   const [isFiltering, startFilteringTransition] = useTransition();
   const [isLoadingMore, startLoadMoreTransition] = useTransition();
-
-  const { clickAnalytics } = useAnalytics();
 
   const hasMore = totalCount > interviewsList.length;
 
@@ -114,7 +116,7 @@ const useInterviews = ({ interviews, searchParams }: InterviewsPageProps) => {
     handleFiltersChange({ query: searchQuery, type: typeFilter, sort: value });
   };
 
-  const handleClick = (interview: Interview, userId?: string) => {
+  const handleClick = (interview: Interview) => {
     if (userId) {
       clickAnalytics(interview, userId);
     }
@@ -136,6 +138,7 @@ const useInterviews = ({ interviews, searchParams }: InterviewsPageProps) => {
   const handleSchedule = (interview: Interview) => {
     setSelectedInterview(interview);
     setScheduleModalOpen(true);
+    if (userId) scheduleAnalytics(interview, userId);
   };
 
   return {

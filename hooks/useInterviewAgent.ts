@@ -5,6 +5,7 @@ import { vapi } from "@/lib/vapi.sdk";
 import { interviewer } from "@/constants";
 import { manageInterviewCompletion } from "@/lib/actions/general.action";
 import { toast } from "sonner";
+import { completedAnalytics } from "@/lib/analytics";
 
 export enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -21,9 +22,8 @@ interface SavedMessage {
 const useInterviewAgent = ({
   feedbackId,
   user,
-  interviewId,
   type,
-  questions,
+  interview,
 }: AgentProps) => {
   const router = useRouter();
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
@@ -87,14 +87,14 @@ const useInterviewAgent = ({
       console.log("handleGenerateFeedback");
 
       const { success, feedbackId: id } = await manageInterviewCompletion({
-        interviewId: interviewId!,
+        interviewId: interview.id,
         userId: user.id,
         transcript: messages,
         feedbackId,
       });
-
+      completedAnalytics(interview, user.id);
       if (success && id) {
-        router.push(`/interview/${interviewId}/feedback`);
+        router.push(`/interview/${interview.id}/feedback`);
       } else {
         toast.error("Error saving feedback");
         router.push("/");
@@ -108,7 +108,7 @@ const useInterviewAgent = ({
         handleInterviewCompletion(messages);
       }
     }
-  }, [messages, callStatus, feedbackId, interviewId, router, type, user.id]);
+  }, [messages, callStatus, feedbackId, interview, router, type, user.id]);
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
@@ -121,13 +121,9 @@ const useInterviewAgent = ({
         },
       });
     } else {
-      let formattedQuestions = "";
-      if (questions) {
-        formattedQuestions = questions
-          .map((question) => `- ${question}`)
-          .join("\n");
-      }
-
+      const formattedQuestions = interview.questions
+        .map((question) => `- ${question}`)
+        .join("\n");
       await vapi.start(interviewer, {
         variableValues: {
           questions: formattedQuestions,

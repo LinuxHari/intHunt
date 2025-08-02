@@ -4,9 +4,6 @@ import { CreateInterviewFormType } from "@/schema";
 import { db } from "@/firebase/admin";
 import { getCurrentUser } from "./auth.action";
 import {
-  AttendedInterviewData,
-  AttendedInterviewDetailsData,
-  AttendedInterviewDoc,
   CatchReturn,
   InterviewDetailsData,
   InterviewSearchParams,
@@ -202,49 +199,53 @@ export const getAttendedInterviews = async (
     const user = await getCurrentUser();
     if (!user) throw "User not found";
 
-    const baseQuery = db
-      .collection("attendedInterviews")
-      .where("userId", "==", user.id);
+    const baseQuery = db.collection("feedback").where("userId", "==", user.id);
 
-    const [attendedInterviewsSnapshot, totalCountSnapshot] = await Promise.all([
+    const [feedbackSnapshot, totalCountSnapshot] = await Promise.all([
       baseQuery
-        .orderBy("attendedAt", "desc")
+        .orderBy("createdAt", "desc")
         .offset((page - 1) * offset)
         .limit(offset)
         .get(),
       baseQuery.get(),
     ]);
 
-    if (attendedInterviewsSnapshot.empty) {
+    if (feedbackSnapshot.empty) {
       return { success: true, attendedInterviews: [], totalCounts: 0 };
     }
 
-    const attendedInterviews: AttendedInterviewDoc[] =
-      attendedInterviewsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as AttendedInterviewData),
-      }));
+    const feedbacks: Feedback[] = feedbackSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as Omit<Feedback, "id">),
+    }));
 
-    const interviewIds = attendedInterviews.map(
-      (attended) => attended.interviewId
-    );
+    const interviewIds = feedbacks.map((feedback) => feedback.interviewId);
     const interviewDetailsMap = await fetchAttendedInterviewDetails(
       interviewIds
     );
 
-    const attendedInterviewsData: AttendedInterview[] = attendedInterviews.map(
-      (attended) => {
-        const interviewData = interviewDetailsMap.get(attended.interviewId)!;
+    const attendedInterviewsData: AttendedInterview[] = feedbacks.map(
+      (feedback) => {
+        const interviewData = interviewDetailsMap.get(feedback.interviewId);
+
+        if (!interviewData) {
+          throw new Error(
+            `Interview details not found for ID: ${feedback.interviewId}`
+          );
+        }
+
         return {
-          id: attended.interviewId,
-          attendedAt: attended.attendedAt,
-          score: attended.score,
-          feedback: attended.feedback,
+          id: feedback.interviewId,
+          attendedAt: feedback.createdAt,
+          score: feedback.totalScore,
+          feedback: feedback.id,
           role: interviewData.role,
           type: interviewData.type,
           level: interviewData.level,
           difficulty: interviewData.difficulty,
-          techStack: interviewData.techStack,
+          techStack: interviewData.techstack,
+          description: interviewData.description,
+          questionCount: interviewData.questionCount,
         };
       }
     );
@@ -328,44 +329,30 @@ const fetchInterviewDetails = async (
 
 const fetchAttendedInterviewDetails = async (
   interviewIds: string[]
-): Promise<Map<string, AttendedInterviewDetailsData>> => {
-  const interviewDetailsMap = new Map();
+): Promise<Map<string, Interview>> => {
+  if (interviewIds.length === 0) return new Map();
 
-  if (interviewIds.length <= 10) {
-    const snapshot = await db
-      .collection("interviews")
-      .where("__name__", "in", interviewIds)
-      .select("type", "role", "techStack", "level", "difficulty")
-      .get();
+  const interviewDetailsMap = new Map<string, Interview>();
 
+  const batches = [];
+  for (let i = 0; i < interviewIds.length; i += 10) {
+    batches.push(interviewIds.slice(i, i + 10));
+  }
+
+  const interviewPromises = batches.map((batch) =>
+    db.collection("interviews").where("__name__", "in", batch).get()
+  );
+
+  const interviewSnapshots = await Promise.all(interviewPromises);
+
+  interviewSnapshots.forEach((snapshot) => {
     snapshot.docs.forEach((doc) => {
-      const data = doc.data()!;
       interviewDetailsMap.set(doc.id, {
-        type: data.type,
-        level: data.level,
-        role: data.role,
-        difficulty: data.difficulty,
-        techStack: data.techStack,
+        id: doc.id,
+        ...(doc.data() as Omit<Interview, "id">),
       });
     });
-  } else {
-    const snapshots = await Promise.all(
-      interviewIds.map((id) => db.collection("interviews").doc(id).get())
-    );
-
-    snapshots.forEach((doc, index) => {
-      if (doc.exists) {
-        const data = doc.data()!;
-        interviewDetailsMap.set(interviewIds[index], {
-          type: data.type,
-          level: data.level,
-          role: data.role,
-          difficulty: data.difficulty,
-          techStack: data.techStack,
-        });
-      }
-    });
-  }
+  });
 
   return interviewDetailsMap;
 };
@@ -474,13 +461,10 @@ export const getInterviewsWithQuery = async ({
 export const scheduleInterview = async (scheduleDetails: ScheduleDetails) => {
   try {
     const { interviewId, role, date, time, timezone } = scheduleDetails;
-
     const user = await getCurrentUser();
-
     if (!user) throw "Please log in to schedule interviews";
 
     const epochTime = new Date(`${date}T${time}:00`).getTime();
-
     const scheduledRef = db.collection("scheduledInterviews").doc();
 
     await scheduledRef.set({

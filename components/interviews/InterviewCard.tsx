@@ -46,10 +46,11 @@ const InterviewCard = ({
 
           <div className="flex gap-2">
             <Link
-              href={`/interviews/${interview.id}`}
+              href={`/interview/${interview.id}`}
               onClick={() => onSelect(interview)}
+              className="flex-1"
             >
-              <Button className="flex-1">
+              <Button>
                 <Play className="h-4 w-4 mr-2" />
                 Attend Now
               </Button>

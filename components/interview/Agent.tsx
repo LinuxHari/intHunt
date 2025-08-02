@@ -6,13 +6,7 @@ import TranscriptSection from "./TranscriptSection";
 import UserCard from "./UserCard";
 import InterviewerCard from "./InterviewerCard";
 
-const Agent = ({
-  user,
-  interviewId,
-  feedbackId,
-  type,
-  questions,
-}: AgentProps) => {
+const Agent = ({ interview, user, feedbackId, type }: AgentProps) => {
   const {
     isSpeaking,
     callStatus,
@@ -21,11 +15,10 @@ const Agent = ({
     handleCall,
     handleDisconnect,
   } = useInterviewAgent({
+    interview,
     user,
-    interviewId,
     feedbackId,
     type,
-    questions,
   });
 
   return (
