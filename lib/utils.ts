@@ -1,6 +1,6 @@
 // import { interviewCovers, mappings } from "@/constants";
 import { clsx, type ClassValue } from "clsx";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { twMerge } from "tailwind-merge";
 
 export const cn = (...inputs: ClassValue[]) => {
@@ -138,4 +138,25 @@ export const getScoreColor = (score: number) => {
   if (score >= 80) return "text-green-600 dark:text-green-400";
   if (score >= 60) return "text-yellow-600 dark:text-yellow-400";
   return "text-red-600 dark:text-red-400";
+};
+
+export const generateCalendarDays = (currentMonth: Dayjs) => {
+  const startOfMonth = currentMonth.startOf("month");
+  const endOfMonth = currentMonth.endOf("month");
+  const days = [];
+
+  for (let i = 0; i < startOfMonth.day(); i++) {
+    days.push(startOfMonth.subtract(startOfMonth.day() - i, "day"));
+  }
+
+  for (let i = 1; i <= currentMonth.daysInMonth(); i++) {
+    days.push(currentMonth.date(i));
+  }
+
+  const remainingDays = 42 - days.length;
+  for (let i = 1; i <= remainingDays; i++) {
+    days.push(endOfMonth.add(i, "day"));
+  }
+
+  return days;
 };

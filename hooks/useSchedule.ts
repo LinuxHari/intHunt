@@ -1,10 +1,10 @@
-import { scheduleInterview } from "@/lib/actions/interview.action";
-import { scheduleFormSchema, ScheduleFormType } from "@/schema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { scheduleInterview } from "@/lib/actions/interview.action";
+import { scheduleFormSchema, ScheduleFormType } from "@/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const useSchedule = (
   onOpenChange: (value: boolean) => void,
@@ -24,29 +24,6 @@ const useSchedule = (
 
   const watchedTimeType = form.watch("timeType");
   const watchedDate = form.watch("date");
-
-  const generateCalendarDays = () => {
-    const startOfMonth = currentMonth.startOf("month");
-    const endOfMonth = currentMonth.endOf("month");
-    const days = [];
-
-    for (let i = 0; i < startOfMonth.day(); i++) {
-      days.push(startOfMonth.subtract(startOfMonth.day() - i, "day"));
-    }
-
-    for (let i = 1; i <= currentMonth.daysInMonth(); i++) {
-      days.push(currentMonth.date(i));
-    }
-
-    const remainingDays = 42 - days.length;
-    for (let i = 1; i <= remainingDays; i++) {
-      days.push(endOfMonth.add(i, "day"));
-    }
-
-    return days;
-  };
-
-  const calendarDays = generateCalendarDays();
 
   const navigateMonth = (direction: "prev" | "next") => {
     const newMonth =
@@ -89,7 +66,6 @@ const useSchedule = (
     isScheduling,
     watchedDate,
     watchedTimeType,
-    calendarDays,
     currentMonth,
     navigateMonth,
     onSubmit,

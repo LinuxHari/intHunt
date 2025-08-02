@@ -44,6 +44,7 @@ const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
                   <DisplayTechIcons
                     techStack={interview.techstack}
                     slice={false}
+                    className="justify-start"
                   />
                 </div>
 
@@ -95,14 +96,14 @@ const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
               <h3 className="font-semibold text-slate-900 dark:text-white mb-4">
                 Interview Instructions
               </h3>
-              <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+              <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-blue-600 dark:text-blue-400 font-semibold text-xs">
                       1
                     </span>
                   </div>
-                  <p>
+                  <p className="text-slate-900 dark:text-white">
                     Click the &quot;Call&quot; button to start your interview
                     with our AI interviewer.
                   </p>
@@ -113,7 +114,7 @@ const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
                       2
                     </span>
                   </div>
-                  <p>
+                  <p className="text-slate-900 dark:text-white">
                     Answer questions naturally and speak clearly. The AI will
                     listen and respond in real-time.
                   </p>
@@ -124,7 +125,7 @@ const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
                       3
                     </span>
                   </div>
-                  <p>
+                  <p className="text-slate-900 dark:text-white">
                     The interview will automatically end when complete, and
                     you&apos;ll receive detailed feedback.
                   </p>

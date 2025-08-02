@@ -7,7 +7,7 @@ interface InterviewCardProps {
 
 const InterviewerCard = ({ isSpeaking }: InterviewCardProps) => {
   return (
-    <Card className="relative group flex-1 h-90 flex items-center justify-center overflow-hidden rounded-2xl border bg-transparent">
+    <Card className="relative group flex-1 w-full h-90 flex items-center justify-center overflow-hidden rounded-2xl border bg-transparent">
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-indigo-800/40 dark:to-indigo-900/30 rounded-2xl pointer-events-none" />
 
       <CardContent className="relative z-10 flex flex-col items-center gap-4 p-6">

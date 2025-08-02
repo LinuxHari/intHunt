@@ -14,7 +14,6 @@ import { ScheduleFormType } from "@/schema";
 
 interface ScheduleDatePickerProps {
   control: Control<ScheduleFormType>;
-  calendarDays: Dayjs[];
   currentMonth: Dayjs;
   watchedDate: Date | null;
   onNavigateMonth: (direction: "prev" | "next") => void;
@@ -22,7 +21,6 @@ interface ScheduleDatePickerProps {
 
 const ScheduleDatePicker = ({
   control,
-  calendarDays,
   currentMonth,
   watchedDate,
   onNavigateMonth,
@@ -43,7 +41,6 @@ const ScheduleDatePicker = ({
                 onNavigateMonth={onNavigateMonth}
               />
               <Calendar
-                calendarDays={calendarDays}
                 currentMonth={currentMonth}
                 selectedDate={field.value}
                 onDateSelect={field.onChange}

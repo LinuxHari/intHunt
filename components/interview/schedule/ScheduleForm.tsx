@@ -16,7 +16,6 @@ const ScheduleForm = ({ onOpenChange, interview }: ScheduleFormProps) => {
     isScheduling,
     watchedDate,
     watchedTimeType,
-    calendarDays,
     currentMonth,
     navigateMonth,
     onSubmit,
@@ -31,7 +30,6 @@ const ScheduleForm = ({ onOpenChange, interview }: ScheduleFormProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <DatePicker
             control={form.control}
-            calendarDays={calendarDays}
             currentMonth={currentMonth}
             watchedDate={watchedDate}
             onNavigateMonth={navigateMonth}

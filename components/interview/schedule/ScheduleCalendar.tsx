@@ -1,22 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { WEEK_DAYS } from "@/constants";
-import { cn } from "@/lib/utils";
+import { cn, generateCalendarDays } from "@/lib/utils";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
+import { useMemo } from "react";
 
 interface ScheduleCalendarProps {
-  calendarDays: Dayjs[];
   currentMonth: Dayjs;
   selectedDate: Date | null;
   onDateSelect: (date: Date) => void;
 }
 
 const ScheduleCalendar = ({
-  calendarDays,
   currentMonth,
   selectedDate,
   onDateSelect,
 }: ScheduleCalendarProps) => {
+  const calendarDays = useMemo(() => generateCalendarDays(currentMonth), []);
+
   return (
     <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4">
       <div className="grid grid-cols-7 gap-1 mb-2">
