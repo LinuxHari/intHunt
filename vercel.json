@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/seed-query-tables",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/train-model",
+      "schedule": "0 5 * * SUN"
+    }
+  ]
+}
