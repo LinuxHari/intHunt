@@ -75,3 +75,32 @@ JOIN
 ON
   t1.item_id = t2.item_id;
 `;
+
+export const getRecommendationsQuery = (userId: string) => `
+SELECT
+  item_id,
+  predicted_interaction_score
+FROM
+  ML.PREDICT(
+    MODEL \`ai-interviewer-889d1.analytics_490492273.job_recommendation_model_with_features\`,
+    (
+      SELECT
+        T2.item_id,
+        T2.role_feature,
+        T2.techstack_feature,
+        T2.level_feature,
+        T2.type_feature,
+        T2.difficulty_feature,
+        T2.attendees_feature,
+        T2.rating_feature,
+        '${userId}' AS user_id,
+        0.0 AS interaction_score -- interaction_score is not known for prediction
+      FROM
+        \`ai-interviewer-889d1.analytics_490492273.interview_features\` AS T2
+      CROSS JOIN
+        (SELECT 1)
+    )
+  )
+ORDER BY predicted_interaction_score DESC
+LIMIT 10;
+`;

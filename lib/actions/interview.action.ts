@@ -16,6 +16,8 @@ import {
   ScheduledInterviewData,
 } from "./type";
 import { FieldValue } from "firebase-admin/firestore";
+import { runBigQueryQuery } from "../bigQuery";
+import { getRecommendationsQuery } from "@/constants/queries";
 
 export const createInterview = async (
   interviewDetails: CreateInterviewFormType
@@ -481,5 +483,19 @@ export const scheduleInterview = async (scheduleDetails: ScheduleDetails) => {
   } catch (error: unknown) {
     console.error(error, "error occured while scheduling interview");
     return { success: false, error: typeof error === "string" ? error : null };
+  }
+};
+
+export const getInterviewRecommendations = async () => {
+  try {
+    const user = await getCurrentUser();
+    if (!user) throw "User not found";
+    const recommendations = await runBigQueryQuery(
+      getRecommendationsQuery(user.id)
+    );
+    return { success: true, recommendations };
+  } catch (error: unknown) {
+    console.error(error, "error occured while getting recommendations");
+    return { success: false };
   }
 };
