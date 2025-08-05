@@ -19,19 +19,12 @@ import { Button } from "@/components/ui/button";
 import { signIn, signUp } from "@/lib/actions/auth.action";
 import FormField from "./FormField";
 import Logo from "../shared/Logo";
-
-const authFormSchema = (type: FormType) => {
-  return z.object({
-    name: type === "sign-up" ? z.string().min(3) : z.string().optional(),
-    email: z.string().email(),
-    password: z.string().min(3),
-  });
-};
+import { signinFormSchema, signupFormSchema } from "@/schema";
 
 const AuthForm = ({ type }: { type: FormType }) => {
   const router = useRouter();
 
-  const formSchema = authFormSchema(type);
+  const formSchema = type === "sign-in" ? signinFormSchema : signupFormSchema;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
