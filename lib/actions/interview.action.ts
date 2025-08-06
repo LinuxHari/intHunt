@@ -18,6 +18,8 @@ import {
 import { FieldValue } from "firebase-admin/firestore";
 import { runBigQueryQuery } from "../bigQuery";
 import { getRecommendationsQuery } from "@/constants/queries";
+import { generateText } from "ai";
+import { google } from "@ai-sdk/google";
 
 export const createInterview = async (
   interviewDetails: CreateInterviewFormType
@@ -496,6 +498,35 @@ export const getInterviewRecommendations = async () => {
     return { success: true, recommendations };
   } catch (error: unknown) {
     console.error(error, "error occured while getting recommendations");
+    return { success: false };
+  }
+};
+
+export const generateInterviewQuestions = async (
+  interviewDetails: Partial<CreateInterviewFormType> & { amount: number }
+) => {
+  try {
+    const { text: questions } = await generateText({
+      model: google("gemini-2.0-flash-001"),
+      prompt: `Prepare questions for a job interview.
+        The job role is ${interviewDetails.role}.
+        The job experience level is ${interviewDetails.level}.
+        The tech stack used in the job is: ${interviewDetails.techstack}.
+        The focus between behavioural and technical questions should lean towards: ${interviewDetails.type}.
+        The difficulty of questions must be ${interviewDetails.difficulty},
+        The amount of questions required is: ${interviewDetails.amount}.
+        Please return only the questions, without any additional text.
+        The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant and follow this description ${interviewDetails.description}.
+        Return the questions formatted like this and following ***MUST BE*** the only response type:
+        ["Question 1", "Question 2", "Question 3"]
+        
+        Thank you! <3
+    `,
+    });
+
+    return { success: true, questions: JSON.parse(questions) as string[] };
+  } catch (err: unknown) {
+    console.error(err, "error occured while generating questions");
     return { success: false };
   }
 };

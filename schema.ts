@@ -110,6 +110,17 @@ export const feedbackSchema = z.object({
   finalAssessment: z.string(),
 });
 
+export const questionFormSchema = z.object({
+  numOfQuestions: z
+    .number()
+    .min(10, { message: "Number of questions should not be less than 10" })
+    .max(25, { message: "Number of questions should not be more than 25" }),
+  description: z
+    .string()
+    .min(10, { message: "Description is too short" })
+    .max(500, { message: "Description is too long" }),
+});
+
 export const signupFormSchema = getAuthFormSchema("sign-up");
 
 export const signinFormSchema = getAuthFormSchema("sign-in");
@@ -121,3 +132,5 @@ export type PasswordFormType = z.infer<typeof passwordSchema>;
 export type CreateInterviewFormType = z.infer<typeof createInterviewSchema>;
 
 export type ScheduleFormType = z.infer<typeof scheduleFormSchema>;
+
+export type QuestionFormType = z.infer<typeof questionFormSchema>;
