@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/train-model",
-      "schedule": "0 5 * * SUN"
+      "schedule": "0 5 * * 7"
     }
   ]
 }
