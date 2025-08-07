@@ -361,6 +361,37 @@ const fetchAttendedInterviewDetails = async (
   return interviewDetailsMap;
 };
 
+const sortInterviews = (
+  interviews: Interview[],
+  sortType: string
+): Interview[] => {
+  const sorted = [...interviews];
+
+  switch (sortType) {
+    case "rating":
+      return sorted.sort(
+        (a, b) => (b.rating?.average || 0) - (a.rating?.average || 0)
+      );
+
+    case "attendees":
+      return sorted.sort((a, b) => (b.attendees || 0) - (a.attendees || 0));
+
+    case "questions":
+      return sorted.sort((a, b) => {
+        const aCount = a.questionCount || a.questions?.length || 0;
+        const bCount = b.questionCount || b.questions?.length || 0;
+        return bCount - aCount;
+      });
+
+    default:
+      return sorted.sort((a, b) => {
+        const aTime = new Date(a.createdAt) || new Date(0);
+        const bTime = new Date(b.createdAt) || new Date(0);
+        return bTime.getTime() - aTime.getTime();
+      });
+  }
+};
+
 export const getInterviewsWithQuery = async ({
   query,
   sortType = "rating",
@@ -370,79 +401,96 @@ export const getInterviewsWithQuery = async ({
 }: InterviewSearchParams): Promise<ReturnInterviewSearch | CatchReturn> => {
   try {
     const skip = (page - 1) * offset;
-    let interviewsQuery = db
-      .collection("interviews")
-      .where("isDeleted", "==", false);
+    const searchTerms =
+      query
+        ?.toLowerCase()
+        .trim()
+        .split(/\s+/)
+        .filter((term) => term.length > 0) || [];
+    const hasSearchQuery = searchTerms.length > 0;
 
-    if (interviewType !== "all")
-      interviewsQuery = interviewsQuery.where("type", "==", interviewType);
+    const buildBaseQuery = () => {
+      let baseQuery = db
+        .collection("interviews")
+        .where("isDeleted", "==", false);
 
-    switch (sortType) {
-      case "rating":
-        interviewsQuery = interviewsQuery.orderBy("rating.average", "desc");
-        break;
-      case "attendees":
-        interviewsQuery = interviewsQuery.orderBy("attendees", "desc");
-        break;
-      case "questions":
-        interviewsQuery = interviewsQuery.orderBy("questionCount", "desc");
-        break;
-      default:
-        interviewsQuery = interviewsQuery.orderBy("createdAt", "desc");
-    }
+      if (interviewType !== "all") {
+        baseQuery = baseQuery.where("type", "==", interviewType);
+      }
 
-    const interviewsSnapshot = await interviewsQuery
-      .offset(skip)
-      .limit(offset)
-      .get();
+      return baseQuery;
+    };
 
-    let interviews: Interview[] = interviewsSnapshot.docs.map(
-      (doc) =>
-        ({
-          id: doc.id,
-          ...doc.data(),
-        } as Interview)
-    );
+    let interviews: Interview[] = [];
+    let totalCount: number = 0;
 
-    if (query && query.trim() !== "") {
-      const searchQuery = query.toLowerCase().trim();
-      interviews = interviews.filter((interview: Interview) => {
-        const roleMatch = interview.role.toLowerCase().includes(searchQuery);
-        const techstackMatch =
-          interview.techstack &&
-          interview.techstack.some((tech: string) =>
-            tech.toLowerCase().includes(searchQuery)
-          );
-        return roleMatch || techstackMatch;
-      });
-    }
+    if (hasSearchQuery) {
+      const allDocsQuery = buildBaseQuery();
+      const allDocsSnapshot = await allDocsQuery.get();
 
-    if (sortType === "questions") {
-      interviews.sort(
-        (a: Interview, b: Interview) => b.questions.length - a.questions.length
+      const allInterviews: Interview[] = allDocsSnapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          } as Interview)
       );
-    }
 
-    const totalCountQuery = db
-      .collection("interviews")
-      .where("type", "==", interviewType)
-      .where("isDeleted", "==", false);
+      const filteredInterviews = allInterviews.filter(
+        (interview: Interview) => {
+          const searchableText = [
+            interview.role || "",
+            ...(interview.techstack || []),
+          ]
+            .map((text) => text.toLowerCase())
+            .join(" ");
 
-    const totalSnapshot = await totalCountQuery.get();
-    let totalCount: number = totalSnapshot.size;
+          return searchTerms.every((term) => searchableText.includes(term));
+        }
+      );
 
-    if (query && query.trim() !== "") {
-      const searchQuery = query.toLowerCase().trim();
-      const allDocs = totalSnapshot.docs.map((doc) => doc.data() as Interview);
-      totalCount = allDocs.filter((interview: Interview) => {
-        const roleMatch = interview.role.toLowerCase().includes(searchQuery);
-        const techstackMatch =
-          interview.techstack &&
-          interview.techstack.some((tech: string) =>
-            tech.toLowerCase().includes(searchQuery)
-          );
-        return roleMatch || techstackMatch;
-      }).length;
+      const sortedInterviews = sortInterviews(filteredInterviews, sortType);
+      totalCount = sortedInterviews.length;
+      interviews = sortedInterviews.slice(skip, skip + offset);
+    } else {
+      let interviewsQuery = buildBaseQuery();
+
+      switch (sortType) {
+        case "rating":
+          interviewsQuery = interviewsQuery.orderBy("rating.average", "desc");
+          break;
+        case "attendees":
+          interviewsQuery = interviewsQuery.orderBy("attendees", "desc");
+          break;
+        case "questions":
+          interviewsQuery = interviewsQuery.orderBy("questionCount", "desc");
+          break;
+        default:
+          interviewsQuery = interviewsQuery.orderBy("createdAt", "desc");
+      }
+
+      const interviewsSnapshot = await interviewsQuery
+        .offset(skip)
+        .limit(offset)
+        .get();
+
+      interviews = interviewsSnapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          } as Interview)
+      );
+
+      if (
+        sortType === "questions" &&
+        interviews.some((i) => !i.questionCount)
+      ) {
+        interviews = sortInterviews(interviews, sortType);
+      }
+
+      const totalCountSnapshot = await buildBaseQuery().get();
+      totalCount = totalCountSnapshot.size;
     }
 
     const totalPages = Math.ceil(totalCount / offset);
@@ -457,7 +505,8 @@ export const getInterviewsWithQuery = async ({
     console.error("Error fetching interviews:", error);
     return {
       success: false,
-      message: "",
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 };

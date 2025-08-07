@@ -1,5 +1,5 @@
-import { useState, useTransition, useCallback } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useTransition, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getInterviewsWithQuery } from "@/lib/actions/interview.action";
 import { InterviewsPageParams } from "@/app/(root)/interviews/page";
@@ -34,11 +34,10 @@ const useInterviews = ({
   searchParams,
   userId,
 }: InterviewsPageProps) => {
-  const pathname = usePathname();
-
   const [interviewsList, setInterviewsList] = useState<Interview[]>(
     interviews.interviews
   );
+
   const [totalCount, setTotalCount] = useState(interviews.totalCount);
   const [page, setPage] = useState(1);
 
@@ -55,8 +54,9 @@ const useInterviews = ({
     null
   );
 
-  const [isFiltering, startFilteringTransition] = useTransition();
   const [isLoadingMore, startLoadMoreTransition] = useTransition();
+
+  const router = useRouter();
 
   const hasMore = totalCount > interviewsList.length;
 
@@ -89,16 +89,14 @@ const useInterviews = ({
   );
 
   const handleFiltersChange = useCallback((filters: Filters) => {
-    const params = new URLSearchParams();
-    if (filters.query) params.set("search", filters.query);
-    if (filters.type && filters.type !== "all")
-      params.set("type", filters.type);
-    if (filters.sort) params.set("sortType", filters.sort);
-    window.history.pushState(null, "", `${pathname}?${params.toString()}`); // Here we use history API to prevent full page re-render
-
-    startFilteringTransition(() => {
-      getInterviews({ filters, page: 1, append: false });
-    });
+    if (filters.query.length > 2) {
+      const params = new URLSearchParams();
+      if (filters.query) params.set("search", filters.query);
+      if (filters.type && filters.type !== "all")
+        params.set("type", filters.type);
+      if (filters.sort) params.set("sortType", filters.sort);
+      router.push(`/interviews?${params.toString()}`);
+    }
   }, []);
 
   const handleSearchChange = (value: string) => {
@@ -141,11 +139,17 @@ const useInterviews = ({
     if (userId) scheduleAnalytics(interview, userId);
   };
 
+  useEffect(() => {
+    if (interviews.success) {
+      setInterviewsList(interviews.interviews);
+      setTotalCount(interviews.totalCount);
+    }
+  }, [searchParams]);
+
   return {
     searchQuery,
     typeFilter,
     sortBy,
-    isFiltering,
     interviewsList,
     hasMore,
     isLoadingMore,

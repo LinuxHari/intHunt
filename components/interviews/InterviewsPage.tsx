@@ -17,7 +17,6 @@ const InterviewsPage = ({
     searchQuery,
     typeFilter,
     sortBy,
-    isFiltering,
     interviewsList,
     hasMore,
     isLoadingMore,
@@ -33,7 +32,7 @@ const InterviewsPage = ({
   } = useInterviews({ searchParams, interviews, userId });
 
   return (
-    <div className="space-y-8 mt-5">
+    <div className="space-y-8 my-5">
       <InterviewsHeader />
 
       <InterviewsFilters
@@ -46,9 +45,7 @@ const InterviewsPage = ({
       />
 
       <div className="space-y-6">
-        {isFiltering ? (
-          <div className="text-center p-8">Loading results...</div>
-        ) : interviewsList.length > 0 ? (
+        {interviewsList.length > 0 ? (
           <InterviewsList
             interviews={interviewsList}
             onSchedule={handleSchedule}
@@ -60,7 +57,7 @@ const InterviewsPage = ({
             description="Try adjusting your search or filters to find more interviews."
           />
         )}
-        {hasMore && !isFiltering && (
+        {hasMore && (
           <LoadMore loading={isLoadingMore} onClick={getMoreInterviews} />
         )}
       </div>

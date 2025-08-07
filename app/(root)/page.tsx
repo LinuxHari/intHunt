@@ -3,6 +3,7 @@
 // import AttendedInterviews from "@/components/home/AttendedInterviews";
 // import UpcomingInterviews from "@/components/home/UpcomingInterviews";
 import Hero from "@/components/home/Hero";
+import { getInterviewRecommendations } from "@/lib/actions/interview.action";
 // import UserStats from "@/components/home/UserStats";
 // import { getAttendedInterviews } from "@/lib/actions/interview.action";
 
@@ -19,10 +20,15 @@ const Home = async () => {
   // const attendedInterviews = userInterviews && userInterviews.success? userInterviews.attendedInterviews: []
   //  const latestInterviews = allInterview && allInterview.success? interviews: 0
 
+  const recommendations = await getInterviewRecommendations();
+
   return (
     <div className="min-h-screen">
       <main className="container mx-auto px-4 py-8">
         <Hero />
+        {recommendations.recommendations?.map((interview, index) => (
+          <p key={index}>{JSON.stringify(interview)}</p>
+        ))}
         {/* {user ? (
           <>
             <UserStats
