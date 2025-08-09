@@ -1,0 +1,65 @@
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
+
+const env = createEnv({
+  server: {
+    POSTGRESQL_URL: z.string().url(),
+    GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(5),
+    // FIREBASE_PROJECT_ID: z.string(),
+    // FIREBASE_CLIENT_EMAIL: z.string(),
+    // FIREBASE_PRIVATE_KEY: z.string(),
+    BIGQUERY_PROJECT_ID: z.string(),
+    BIGQUERY_CLIENT_EMAIL: z.string(),
+    BIGQUERY_PRIVATE_KEY: z.string(),
+    CRON_SECRET: z.string(),
+    NODE_ENV: z.enum(["development", "production"]),
+  },
+  client: {
+    NEXT_PUBLIC_VAPI_WEB_TOKEN: z.string().min(5),
+    NEXT_PUBLIC_VAPI_WORKFLOW_ID: z.string().min(5),
+    NEXT_PUBLIC_BASE_URL: z.string().url(),
+    // NEXT_PUBLIC_FIREBASE_API_KEY: z.string(),
+    // NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z.string(),
+    // NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string(),
+    // NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string(),
+    // NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string(),
+    // NEXT_PUBLIC_FIREBASE_APP_ID: z.string(),
+    // NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string(),
+    NEXT_PUBLIC_SUPABASE_URL: z.string(),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
+    NEXT_PUBLIC_GA_ID: z.string(),
+  },
+  runtimeEnv: {
+    POSTGRESQL_URL: process.env.POSTGRESQL_URL,
+    GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    // FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+    // FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
+    // FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
+    BIGQUERY_PROJECT_ID: process.env.BIGQUERY_PROJECT_ID,
+    BIGQUERY_CLIENT_EMAIL: process.env.BIGQUERY_CLIENT_EMAIL,
+    BIGQUERY_PRIVATE_KEY: process.env.BIGQUERY_PRIVATE_KEY,
+    CRON_SECRET: process.env.CRON_SECRET,
+    NODE_ENV: process.env.NODE_ENV,
+
+    NEXT_PUBLIC_VAPI_WEB_TOKEN: process.env.NEXT_PUBLIC_VAPI_WEB_TOKEN,
+    NEXT_PUBLIC_VAPI_WORKFLOW_ID: process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    // NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    // NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
+    //   process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    // NEXT_PUBLIC_FIREBASE_PROJECT_ID:
+    //   process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    // NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:
+    //   process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    // NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
+    //   process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    // NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    // NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:
+    //   process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
+  },
+});
+
+export default env;
