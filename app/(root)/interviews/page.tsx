@@ -13,6 +13,8 @@ interface InterviewsPageProps {
   searchParams: Promise<InterviewsPageParams>;
 }
 
+export const dynamic = "force-dynamic";
+
 const Interviews = async ({ searchParams }: InterviewsPageProps) => {
   const params = await searchParams;
 

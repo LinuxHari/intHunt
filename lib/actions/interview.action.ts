@@ -290,7 +290,6 @@ export const getInterviewsWithQuery = async ({
 
     const searchQuery = and(baseConditions, ...searchConditions);
 
-    // Rank expression
     const tsRank = sql`ts_rank(
       setweight(to_tsvector('english', ${interviews.role}), 'A') || 
       setweight(to_tsvector('english', (

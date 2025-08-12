@@ -2,6 +2,8 @@ import UpcomingInterviewsPage from "@/components/dashboard/upcomingInterviews/Up
 import { getUpcomingInterviews } from "@/lib/actions/interview.action";
 // import { getUpcomingStats } from "@/lib/actions/user.action";
 
+export const dynamic = "force-dynamic";
+
 const UpcomingInterviews = async () => {
   // const upcomingInterviewsStats = getUpcomingStats();
   const upcomingInterviews = getUpcomingInterviews();

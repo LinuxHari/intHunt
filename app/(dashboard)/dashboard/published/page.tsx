@@ -2,6 +2,8 @@ import PublishedInterviewsPage from "@/components/dashboard/publishedInterviews/
 import { getPublishedInterviews } from "@/lib/actions/interview.action";
 import { getPublishedStats } from "@/lib/actions/user.action";
 
+export const dynamic = "force-dynamic";
+
 const PublishedInterviews = async () => {
   const publishedStats = getPublishedStats();
   const publishedInterviews = getPublishedInterviews();

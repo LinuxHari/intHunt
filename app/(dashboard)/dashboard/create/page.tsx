@@ -1,5 +1,7 @@
 import CreateInterviewForm from "@/components/dashboard/createInterview/CreateInterviewForm";
 
+export const dynamic = "force-dynamic";
+
 const CreateInterviewPage = () => {
   return (
     <div className="space-y-8">

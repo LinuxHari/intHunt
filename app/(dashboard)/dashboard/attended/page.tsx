@@ -2,6 +2,8 @@ import AttendedInterviewsPage from "@/components/dashboard/attendedInterviews/At
 import { getAttendedInterviews } from "@/lib/actions/interview.action";
 import { getAttendedStats } from "@/lib/actions/user.action";
 
+export const dynamic = "force-dynamic";
+
 const AttendedInterviews = async () => {
   const attendedInterviews = getAttendedInterviews();
   const attendedStats = getAttendedStats();

@@ -7,6 +7,8 @@ import Hero from "@/components/home/Hero";
 // import UserStats from "@/components/home/UserStats";
 // import { getAttendedInterviews } from "@/lib/actions/interview.action";
 
+export const dynamic = "force-dynamic";
+
 const Home = async () => {
   // const user = await getCurrentUser();
 
