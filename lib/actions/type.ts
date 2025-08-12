@@ -78,31 +78,6 @@ export interface ReturnUpcomingInterviews {
   totalCounts: number;
 }
 
-export interface ScheduledInterviewData {
-  userId: string;
-  scheduledAt: string;
-  interviewId: string;
-  createdAt: string;
-}
-
-export interface ScheduledInterview extends ScheduledInterviewData {
-  id: string;
-}
-
-export interface InterviewDetailsData {
-  role: string;
-  questions: number;
-  attendees: number;
-  averageScore: number;
-  createdAt: string;
-  level: Interview["level"];
-  type: Interview["type"];
-  difficulty: Interview["difficulty"];
-  questionCount: number;
-  description: string;
-  techstack: string[];
-}
-
 export interface AttendedInterviewData {
   userId: string;
   interviewId: string;

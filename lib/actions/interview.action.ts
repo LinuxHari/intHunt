@@ -4,20 +4,12 @@ import { CreateInterviewFormType } from "@/validators";
 import { getCurrentUser } from "./auth.action";
 import {
   CatchReturn,
-  // CatchReturn,
-  // InterviewDetailsData,
   InterviewSearchParams,
   ReturnAttendedInterviews,
   ReturnInterviewSearch,
   ReturnPublishedInterviews,
   ReturnUpcomingInterviews,
-  // ReturnAttendedInterviews,
-  // ReturnInterviewSearch,
-  // ReturnPublishedInterviews,
-  // ReturnUpcomingInterviews,
   ScheduleDetails,
-  // ScheduledInterview,
-  // ScheduledInterviewData,
 } from "./type";
 import { runBigQueryQuery } from "../bigQuery";
 import { getRecommendationsQuery } from "@/constants/queries";
@@ -69,7 +61,6 @@ export const getPublishedInterviews = async (
 
     const whereCondition = eq(interviews.isDeleted, false);
 
-    // Get total count and paginated results in parallel
     const [totalCountResult, publishedInterviewsResult] = await Promise.all([
       db.select({ count: count() }).from(interviews).where(whereCondition),
       db
@@ -207,14 +198,12 @@ export const getAttendedInterviews = async (
       return { success: true, attendedInterviews: [], totalCounts: 0 };
     }
 
-    // Get interview details for all feedback entries
     const interviewIds = feedbackResult.map((f) => f.interviewId!);
     const interviewDetails = await db
       .select()
       .from(interviews)
       .where(inArray(interviews.id, interviewIds));
 
-    // Create a map for O(1) lookup
     const interviewDetailsMap = new Map(
       interviewDetails.map((interview) => [interview.id, interview])
     );
@@ -232,7 +221,7 @@ export const getAttendedInterviews = async (
         id: feedbackItem.interviewId!,
         attendedAt: feedbackItem.createdAt,
         score: feedbackItem.totalScore!,
-        feedback: feedbackItem.interviewId!, // Adjust based on your needs
+        feedback: feedbackItem.interviewId!,
         role: interviewData.role,
         type: interviewData.type,
         level: interviewData.level,
@@ -310,7 +299,6 @@ export const getInterviewsWithQuery = async ({
         ? sql`${interviews.questionCount} DESC`
         : sql`${interviews.rating}.average DESC`;
 
-    // Rank expression
     const tsRank = sql`ts_rank(
       setweight(to_tsvector('english', ${interviews.role}), 'A') || 
       setweight(to_tsvector('english', (
