@@ -300,7 +300,6 @@ export const getInterviewsWithQuery = async ({
       to_tsquery('english', ${tsQueryTerm})
     )`;
 
-    // Main sort column
     const sortColumn =
       sortType === "rating"
         ? sql`CAST(${interviews.rating} ->> 'average' AS FLOAT) DESC`
