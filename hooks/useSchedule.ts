@@ -3,7 +3,7 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { scheduleInterview } from "@/lib/actions/interview.action";
-import { scheduleFormSchema, ScheduleFormType } from "@/schema";
+import { scheduleFormSchema, ScheduleFormType } from "@/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const useSchedule = (

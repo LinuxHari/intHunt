@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/form";
 import { TIME_SLOTS } from "@/constants";
 import { cn } from "@/lib/utils";
-import { ScheduleFormType } from "@/schema";
+import { ScheduleFormType } from "@/validators";
 import { Control, UseFormSetValue } from "react-hook-form";
 
 interface SchedulePresetTimeSelectorProps {

@@ -3,15 +3,9 @@
 import { z } from "zod";
 import Link from "next/link";
 import { toast } from "sonner";
-import { auth } from "@/firebase/client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -19,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { signIn, signUp } from "@/lib/actions/auth.action";
 import FormField from "./FormField";
 import Logo from "../shared/Logo";
-import { signinFormSchema, signupFormSchema } from "@/schema";
+import { signinFormSchema, signupFormSchema } from "@/validators";
 
 const AuthForm = ({ type }: { type: FormType }) => {
   const router = useRouter();
@@ -39,14 +33,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       if (type === "sign-up") {
         const { name, email, password } = data;
 
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
         const result = await signUp({
-          uid: userCredential.user.uid,
           name: name!,
           email,
           password,
@@ -61,22 +48,13 @@ const AuthForm = ({ type }: { type: FormType }) => {
         router.push("/sign-in");
       } else {
         const { email, password } = data;
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
 
-        const idToken = await userCredential.user.getIdToken();
-        if (!idToken) {
-          toast.error("Sign in Failed. Please try again.");
-          return;
-        }
-
-        await signIn({
+        const result = await signIn({
           email,
-          idToken,
+          password,
         });
+
+        if (!result.success) return toast.error(result.message);
 
         toast.success("Signed in successfully.");
         router.push("/");

@@ -10,20 +10,18 @@ interface Feedback {
   strengths: string[];
   areasForImprovement: string[];
   finalAssessment: string;
-  createdAt: string;
+  createdAt: Date;
 }
 
 interface BaseInterview {
   id: string;
   role: string;
-  type: Interview["type"];
-  level: Interview["level"];
-  difficulty: Interview["difficulty"];
+  type: "behavioral" | "technical";
+  level: "junior" | "mid" | "senior";
+  difficulty: "easy" | "medium" | "hard";
 }
 
 interface Interview extends BaseInterview {
-  level: "junior" | "mid" | "senior";
-  type: "behavioral" | "technical";
   techstack: string[];
   description: string;
   questions: string[];
@@ -34,8 +32,7 @@ interface Interview extends BaseInterview {
   };
   averageScore: number;
   attendees: number;
-  difficulty: "easy" | "medium" | "hard";
-  createdAt: string;
+  createdAt: Date;
   isDeleted: boolean;
 }
 
@@ -43,15 +40,15 @@ interface UpcomingInterview extends BaseInterview {
   questionCount: number;
   attendees: number;
   averageScore: number;
-  createdAt: string;
-  scheduledAt: string;
+  createdAt: Date;
+  scheduledAt: Date;
   description: string;
   techstack: string[];
 }
 
 interface PublishedInterview extends BaseInterview {
   difficulty: Interview["difficulty"];
-  createdAt: string;
+  createdAt: Date;
   totalQuestions: number;
   description: string;
   techstack: string[];
@@ -61,7 +58,7 @@ interface PublishedInterview extends BaseInterview {
 
 interface AttendedInterview extends BaseInterview {
   type: Interview["type"];
-  attendedAt: string;
+  attendedAt: Date;
   score: number;
   feedback: string;
   techStack: string[];
@@ -79,6 +76,11 @@ interface User {
   email: string;
   id: string;
   image?: string;
+  createdAt: string;
+  updatedAt?: string;
+  role?: string;
+  about?: string;
+  avatar?: string;
 }
 
 interface InterviewCardProps {
@@ -114,14 +116,11 @@ interface GetLatestInterviewsParams {
 
 interface SignInParams {
   email: string;
-  idToken: string;
+  password: string;
 }
 
-interface SignUpParams {
-  uid: string;
+interface SignUpParams extends SignInParams {
   name: string;
-  email: string;
-  password: string;
 }
 
 type FormType = "sign-in" | "sign-up";

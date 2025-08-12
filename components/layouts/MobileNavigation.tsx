@@ -17,12 +17,7 @@ import LogoutModal from "@/components/shared/LogoutModal";
 import UserAvatar from "../interview/UserAvatar";
 
 interface MobileNavigationProps {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    image?: string;
-  } | null;
+  user: User | null;
 }
 
 const MobileNavigation = ({ user }: MobileNavigationProps) => {

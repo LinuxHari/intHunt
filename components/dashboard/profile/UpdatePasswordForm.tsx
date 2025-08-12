@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { updatePassword } from "@/lib/actions/user.action";
-import { PasswordFormType, passwordSchema } from "@/schema";
+import { PasswordFormType, passwordSchema } from "@/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock } from "lucide-react";
 import { useForm } from "react-hook-form";

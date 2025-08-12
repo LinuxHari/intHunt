@@ -1,34 +1,29 @@
-import { CalendarDays, TrendingUp, Users, Clock } from "lucide-react";
+import { TrendingUp, Users, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CatchReturn, ReturnUserAnalytics } from "@/lib/actions/type";
 import { use } from "react";
 
 interface StatsCardsProps {
   analytics: Promise<ReturnUserAnalytics | CatchReturn>;
-  timeFilter: "week" | "month" | "year"
+  timeFilter: "week" | "month" | "year";
 }
 
-const StatsCards = ({
-  analytics,
-  timeFilter
-}: StatsCardsProps) => {
+const StatsCards = ({ analytics, timeFilter }: StatsCardsProps) => {
+  const userAnalytics = use(analytics);
 
-  const userAnalytics = use(analytics)
-
-  if(!userAnalytics.success)
-    return null
+  if (!userAnalytics.success) return null;
 
   const statsData = [
     {
       title: "Total Interviews",
-      value: userAnalytics.analytics.current[timeFilter].count,
+      value: 0,
       icon: Users,
-      change: `${userAnalytics.analytics.current[timeFilter].count}%`,
+      change: `0%`,
       suffix: "",
     },
     {
       title: "Average Score",
-      value: userAnalytics.analytics.current[timeFilter].averageScore,
+      value: 0,
       icon: TrendingUp,
       change: "+5%",
       suffix: "%",

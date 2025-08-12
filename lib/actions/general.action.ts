@@ -1,16 +1,15 @@
 "use server";
-
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
-
-import { db } from "@/firebase/admin";
-import { feedbackSchema } from "@/schema";
+import { feedbackSchema } from "@/validators";
+import { db } from "@/drizzle";
+import { interviews, feedback } from "../schema";
+import { eq, and } from "drizzle-orm";
 
 export const manageInterviewCompletion = async (
   params: InterviewCompletionParams
 ) => {
   const { interviewId, userId, transcript, feedbackId } = params;
-
   try {
     const formattedTranscript = transcript
       .map(
@@ -28,22 +27,19 @@ export const manageInterviewCompletion = async (
         You are an AI interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories. Be thorough and detailed in your analysis. Don't be lenient with the candidate. If there are mistakes or areas for improvement, point them out.
         Transcript:
         ${formattedTranscript}
-
         Please score the candidate from 0 to 100 in the following areas. Do not add categories other than the ones provided:
         - **Communication Skills**: Clarity, articulation, structured responses.
         - **Technical Knowledge**: Understanding of key concepts for the role.
         - **Problem-Solving**: Ability to analyze problems and propose solutions.
         - **Cultural & Role Fit**: Alignment with company values and job role.
         - **Confidence & Clarity**: Confidence in responses, engagement, and clarity.
-        `,
+      `,
       system:
         "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
     });
-    const feedbackRef = feedbackId
-      ? db.collection("feedback").doc(feedbackId)
-      : db.collection("feedback").doc();
-    await db.runTransaction(async (transaction) => {
-      const feedback = {
+
+    await db.transaction(async (tx) => {
+      const feedbackData = {
         interviewId,
         userId,
         totalScore: object.totalScore,
@@ -51,36 +47,45 @@ export const manageInterviewCompletion = async (
         strengths: object.strengths,
         areasForImprovement: object.areasForImprovement,
         finalAssessment: object.finalAssessment,
-        createdAt: new Date().toISOString(),
       };
 
-      transaction.set(feedbackRef, feedback);
-
-      const interviewQuerySnapshot = await transaction.get(
-        db.collection("interviews").where("userId", "==", userId)
-      );
-
-      if (interviewQuerySnapshot.empty) {
-        throw new Error("Interview document not found for this user");
+      if (feedbackId) {
+        await tx
+          .update(feedback)
+          .set(feedbackData)
+          .where(eq(feedback.interviewId, feedbackId));
+      } else {
+        await tx.insert(feedback).values(feedbackData);
       }
 
-      const interviewDoc = interviewQuerySnapshot.docs[0];
-      const interviewRef = interviewDoc.ref;
-      const interviewData = interviewDoc.data();
+      const interview = await tx
+        .select()
+        .from(interviews)
+        .where(eq(interviews.id, interviewId))
+        .limit(1);
 
-      const oldCount = interviewData.attendeesCount || 0;
+      if (interview.length === 0) {
+        throw new Error("Interview document not found");
+      }
+
+      const interviewData = interview[0];
+      const oldCount = interviewData.attendees || 0;
       const oldTotalScore = (interviewData.averageScore || 0) * oldCount;
-
       const newCount = oldCount + 1;
-      const newAverageScore = (oldTotalScore + object.totalScore) / newCount;
+      const newAverageScore = Math.round(
+        (oldTotalScore + object.totalScore) / newCount
+      );
 
-      transaction.update(interviewRef, {
-        attendeesCount: newCount,
-        averageScore: newAverageScore,
-      });
+      await tx
+        .update(interviews)
+        .set({
+          attendees: newCount,
+          averageScore: newAverageScore,
+        })
+        .where(eq(interviews.id, interviewId));
     });
 
-    return { success: true, feedbackId: feedbackRef.id };
+    return { success: true, feedbackId: feedbackId || "generated" };
   } catch (error) {
     console.error("Error saving feedback:", error);
     return { success: false };
@@ -90,44 +95,37 @@ export const manageInterviewCompletion = async (
 export const getInterviewById = async (
   id: string
 ): Promise<Interview | null> => {
-  const interview = await db.collection("interviews").doc(id).get();
+  try {
+    const interview = await db
+      .select()
+      .from(interviews)
+      .where(eq(interviews.id, id))
+      .limit(1);
 
-  return interview.data() as Interview | null;
+    return interview.length > 0 ? (interview[0] as Interview) : null;
+  } catch (error) {
+    console.error("Error getting interview by ID:", error);
+    return null;
+  }
 };
 
 export const getFeedbackByInterviewId = async (
   params: GetFeedbackByInterviewIdParams
 ): Promise<Feedback | null> => {
-  const { interviewId, userId } = params;
+  try {
+    const { interviewId, userId } = params;
 
-  const querySnapshot = await db
-    .collection("feedback")
-    .where("interviewId", "==", interviewId)
-    .where("userId", "==", userId)
-    .limit(1)
-    .get();
+    const feedbackResult = await db
+      .select()
+      .from(feedback)
+      .where(
+        and(eq(feedback.interviewId, interviewId), eq(feedback.userId, userId))
+      )
+      .limit(1);
 
-  if (querySnapshot.empty) return null;
-
-  const feedbackDoc = querySnapshot.docs[0];
-  return { id: feedbackDoc.id, ...feedbackDoc.data() } as Feedback;
-};
-
-export const getLatestInterviews = async (
-  params: GetLatestInterviewsParams
-): Promise<Interview[] | null> => {
-  const { userId, limit = 20 } = params;
-
-  const interviews = await db
-    .collection("interviews")
-    .orderBy("createdAt", "desc")
-    .where("finalized", "==", true)
-    .where("userId", "!=", userId)
-    .limit(limit)
-    .get();
-
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
+    return feedbackResult.length > 0 ? (feedbackResult[0] as Feedback) : null;
+  } catch (error) {
+    console.error("Error getting feedback by interview ID:", error);
+    return null;
+  }
 };

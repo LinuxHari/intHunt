@@ -9,9 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { auth } from "@/firebase/client";
-import { signOut as clearCookies } from "@/lib/actions/auth.action";
-import { signOut } from "firebase/auth";
+import { signOut } from "@/lib/actions/auth.action";
 import { LogOut, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -26,12 +24,15 @@ const LogoutModal = ({ open, onOpenChange }: LogoutModalProps) => {
   const router = useRouter();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleLogout = () => {
-    signOut(auth);
-    clearCookies();
-    onOpenChange(false);
-    toast.success("Logged out successfully");
-    timeoutRef.current = setTimeout(() => router.push("/sign-in"), 1000);
+  const handleLogout = async () => {
+    const { success } = await signOut();
+    if (!success) {
+      toast.error("Failed to log out. Please try again.");
+    } else {
+      onOpenChange(false);
+      toast.success("Logged out successfully");
+      timeoutRef.current = setTimeout(() => router.push("/sign-in"), 1000);
+    }
   };
 
   useEffect(() => {

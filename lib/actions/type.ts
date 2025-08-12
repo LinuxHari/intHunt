@@ -29,7 +29,7 @@ export type ReturnUserRecents = {
   success: true;
   recents: Array<{
     role: string;
-    attendedAt: string;
+    attendedAt: Date;
     type: Interview["type"];
     score: number;
   }>;
@@ -39,7 +39,7 @@ export type ReturnUpcoming = {
   success: true;
   upcomingStats: {
     totalScheduled: number;
-    dueToday: number;
+    // dueToday: number;
     averageQuestions: number;
   };
 };

@@ -10,7 +10,7 @@ import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import CalendarHeader from "@/components/interview/schedule/ScheduleCalendarHeader";
 import Calendar from "@/components/interview/schedule/ScheduleCalendar";
-import { ScheduleFormType } from "@/schema";
+import { ScheduleFormType } from "@/validators";
 
 interface ScheduleDatePickerProps {
   control: Control<ScheduleFormType>;

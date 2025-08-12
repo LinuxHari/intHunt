@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { QuestionFormType } from "@/schema";
+import { QuestionFormType } from "@/validators";
 import { FileQuestion } from "lucide-react";
 import GenerateQuestionsForm from "./GenerateQuestionsForm";
 

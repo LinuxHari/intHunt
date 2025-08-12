@@ -1,5 +1,4 @@
-import { useState, useTransition, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition, useCallback } from "react";
 import { toast } from "sonner";
 import { getInterviewsWithQuery } from "@/lib/actions/interview.action";
 import { InterviewsPageParams } from "@/app/(root)/interviews/page";
@@ -38,7 +37,7 @@ const useInterviews = ({
     interviews.interviews
   );
 
-  const [totalCount, setTotalCount] = useState(interviews.totalCount);
+  const [hasNext, setHasNext] = useState(interviews.hasNextPage);
   const [page, setPage] = useState(1);
 
   const [searchQuery, setSearchQuery] = useState(searchParams.search || "");
@@ -55,10 +54,7 @@ const useInterviews = ({
   );
 
   const [isLoadingMore, startLoadMoreTransition] = useTransition();
-
-  const router = useRouter();
-
-  const hasMore = totalCount > interviewsList.length;
+  const [isFiltering, startFilteringTransition] = useTransition();
 
   const getInterviews = useCallback(
     async ({ filters, page, append }: LoadInterviewParams) => {
@@ -75,29 +71,37 @@ const useInterviews = ({
           setInterviewsList((prev) => [...prev, ...result.interviews]);
         } else {
           setInterviewsList(result.interviews);
-          setTotalCount(result.totalCount);
+          setHasNext(result.hasNextPage);
         }
       } else {
         toast.error("Failed to load more interviews");
         if (!append) {
           setInterviewsList([]);
-          setTotalCount(0);
+          setHasNext(false);
         }
       }
     },
     []
   );
 
-  const handleFiltersChange = useCallback((filters: Filters) => {
-    if (filters.query.length > 2) {
-      const params = new URLSearchParams();
-      if (filters.query) params.set("search", filters.query);
-      if (filters.type && filters.type !== "all")
-        params.set("type", filters.type);
-      if (filters.sort) params.set("sortType", filters.sort);
-      router.push(`/interviews?${params.toString()}`);
-    }
-  }, []);
+  const handleFiltersChange = useCallback(
+    (filters: Filters) => {
+      if (filters.query.length >= 2) {
+        const params = new URLSearchParams();
+        if (filters.query) params.set("search", filters.query);
+        if (filters.type && filters.type !== "all")
+          params.set("type", filters.type);
+        if (filters.sort) params.set("sortType", filters.sort);
+        history.pushState(null, "", `?${params.toString()}`);
+
+        startFilteringTransition(async () => {
+          await getInterviews({ filters, page: 1, append: false });
+          setPage(1);
+        });
+      }
+    },
+    [getInterviews]
+  );
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -121,11 +125,11 @@ const useInterviews = ({
   };
 
   const getMoreInterviews = () => {
-    if (!hasMore || isLoadingMore) return;
+    if (!hasNext || isLoadingMore) return;
 
     const nextPage = page + 1;
-    startLoadMoreTransition(() => {
-      getInterviews({
+    startLoadMoreTransition(async () => {
+      await getInterviews({
         filters: { query: searchQuery, type: typeFilter, sort: sortBy },
         page: nextPage,
         append: true,
@@ -139,20 +143,14 @@ const useInterviews = ({
     if (userId) scheduleAnalytics(interview, userId);
   };
 
-  useEffect(() => {
-    if (interviews.success) {
-      setInterviewsList(interviews.interviews);
-      setTotalCount(interviews.totalCount);
-    }
-  }, [searchParams]);
-
   return {
     searchQuery,
     typeFilter,
     sortBy,
     interviewsList,
-    hasMore,
+    hasMore: hasNext,
     isLoadingMore,
+    isFiltering,
     selectedInterview,
     scheduleModalOpen,
     setScheduleModalOpen,

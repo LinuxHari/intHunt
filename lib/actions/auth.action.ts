@@ -1,42 +1,24 @@
 "use server";
 
-import { auth, db } from "@/firebase/admin";
-import { FirebaseError } from "firebase/app";
-import { cookies } from "next/headers";
-
-const SESSION_DURATION = 60 * 60 * 24 * 7;
-
-export const setSessionCookie = async (idToken: string) => {
-  const cookieStore = await cookies();
-
-  const sessionCookie = await auth.createSessionCookie(idToken, {
-    expiresIn: SESSION_DURATION * 1000,
-  });
-
-  cookieStore.set("session", sessionCookie, {
-    maxAge: SESSION_DURATION,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    sameSite: "lax",
-  });
-};
+import env from "@/env";
+import { createClient } from "@/supabase/admin";
+import { AuthApiError } from "@supabase/supabase-js";
 
 export const signUp = async (params: SignUpParams) => {
-  const { uid, name, email } = params;
-
   try {
-    const userRecord = await db.collection("users").doc(uid).get();
-    if (userRecord.exists)
-      return {
-        success: false,
-        message: "User already exists. Please sign in.",
-      };
-
-    await db.collection("users").doc(uid).set({
-      name,
-      email,
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signUp({
+      email: params.email,
+      password: params.password,
+      options: {
+        data: {
+          name: params.name,
+        },
+        emailRedirectTo: env.NEXT_PUBLIC_BASE_URL,
+      },
     });
+
+    if (error) throw error;
 
     return {
       success: true,
@@ -45,10 +27,7 @@ export const signUp = async (params: SignUpParams) => {
   } catch (error: unknown) {
     console.error("Error creating user:", error);
 
-    if (
-      error instanceof FirebaseError &&
-      error.code === "auth/email-already-exists"
-    ) {
+    if (error instanceof AuthApiError && error.code === "email_exists") {
       return {
         success: false,
         message: "This email is already in use",
@@ -63,19 +42,38 @@ export const signUp = async (params: SignUpParams) => {
 };
 
 export const signIn = async (params: SignInParams) => {
-  const { email, idToken } = params;
+  const supabase = await createClient();
+  const { email, password } = params;
 
   try {
-    const userRecord = await auth.getUserByEmail(email);
-    if (!userRecord)
-      return {
-        success: false,
-        message: "User does not exist. Create an account.",
-      };
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    await setSessionCookie(idToken);
+    if (error) throw error;
+
+    return { success: true, message: "Signed in successfully" };
   } catch (error: unknown) {
     console.log(error, "error occured in authentication");
+
+    if (error instanceof AuthApiError) {
+      if (error.code === "user_not_found")
+        return {
+          success: false,
+          message: "User does not exist",
+        };
+      else if (error.code === "invalid_credentials")
+        return {
+          success: false,
+          message: "Invalid email or password",
+        };
+      else if (error.code === "provider_email_needs_verification")
+        return {
+          success: false,
+          message: "Email is not verified yet",
+        };
+    }
 
     return {
       success: false,
@@ -85,36 +83,37 @@ export const signIn = async (params: SignInParams) => {
 };
 
 export const signOut = async () => {
-  const cookieStore = await cookies();
-  cookieStore.delete("session");
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+
+    return { success: true };
+  } catch (error: unknown) {
+    console.error(error, "Error occured while signing out");
+    return { success: false };
+  }
 };
 
 export const getCurrentUser = async (): Promise<User | null> => {
-  const cookieStore = await cookies();
-
-  const sessionCookie = cookieStore.get("session")?.value;
-
-  if (!sessionCookie) return null;
-
   try {
-    const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
-
-    // get user info from db
-    const userRecord = await db
-      .collection("users")
-      .doc(decodedClaims.uid)
-      .get();
-
-    if (!userRecord.exists) {
-      return null;
-    }
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user?.email) return null;
 
     return {
-      ...userRecord.data(),
-      id: userRecord.id,
-    } as User;
-  } catch (error) {
-    console.error(error);
+      email: data.user.email,
+      id: data.user.id,
+      name: data.user.user_metadata.name as string,
+      createdAt: data.user.created_at,
+      updatedAt: data.user.updated_at,
+      role: data.user.user_metadata.role as string,
+      about: data.user.user_metadata.about as string,
+      avatar: data.user.user_metadata.avatar as string,
+    };
+  } catch (error: unknown) {
+    console.error(error, "Error while getting current user");
+
     return null;
   }
 };

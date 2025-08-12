@@ -20,6 +20,7 @@ const InterviewsPage = ({
     interviewsList,
     hasMore,
     isLoadingMore,
+    isFiltering,
     selectedInterview,
     scheduleModalOpen,
     handleClick,
@@ -45,7 +46,9 @@ const InterviewsPage = ({
       />
 
       <div className="space-y-6">
-        {interviewsList.length > 0 ? (
+        {isFiltering ? (
+          <div className="text-center p-8">Loading results...</div>
+        ) : interviewsList.length > 0 ? (
           <InterviewsList
             interviews={interviewsList}
             onSchedule={handleSchedule}
@@ -57,7 +60,7 @@ const InterviewsPage = ({
             description="Try adjusting your search or filters to find more interviews."
           />
         )}
-        {hasMore && (
+        {hasMore && !isFiltering && (
           <LoadMore loading={isLoadingMore} onClick={getMoreInterviews} />
         )}
       </div>

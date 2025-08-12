@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runBigQueryQuery } from "@/lib/bigQuery";
 import { TRAIN_MODEL_QUERY } from "@/constants/queries";
+import env from "@/env";
 
 export async function POST(request: NextRequest) {
   const secret = request.headers.get("x-vercel-cron-event-secret");
-  if (secret !== process.env.CRON_SECRET) {
+  if (secret !== env.CRON_SECRET) {
     console.error("Unauthorized cron job access attempt.");
     return NextResponse.json(
       { success: false, message: "Unauthorized" },

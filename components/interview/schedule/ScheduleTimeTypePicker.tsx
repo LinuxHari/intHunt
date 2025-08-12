@@ -5,7 +5,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ScheduleFormType } from "@/schema";
+import { ScheduleFormType } from "@/validators";
 import { Control } from "react-hook-form";
 
 interface ScheduleTimeTypeSelectorProps {

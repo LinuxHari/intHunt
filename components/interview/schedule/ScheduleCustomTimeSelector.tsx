@@ -6,7 +6,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Control, UseFormSetValue } from "react-hook-form";
-import { ScheduleFormType } from "@/schema";
+import { ScheduleFormType } from "@/validators";
 
 interface ScheduleCustomTimeSelectorProps {
   control: Control<ScheduleFormType>;

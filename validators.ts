@@ -134,3 +134,5 @@ export type CreateInterviewFormType = z.infer<typeof createInterviewSchema>;
 export type ScheduleFormType = z.infer<typeof scheduleFormSchema>;
 
 export type QuestionFormType = z.infer<typeof questionFormSchema>;
+
+export type FeedbackType = z.infer<typeof feedbackSchema>;

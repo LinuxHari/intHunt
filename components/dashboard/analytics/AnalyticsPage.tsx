@@ -2,16 +2,17 @@
 
 import ChartSection from "@/components/dashboard/analytics/ChartSection";
 import RecentPerformance from "@/components/dashboard/analytics/RecentPerformance";
-import StatsCards from "@/components/dashboard/analytics/StatsCards";
+// import StatsCards from "@/components/dashboard/analytics/StatsCards";
 import TimeFilter from "@/components/dashboard/analytics/TimeFilter";
-import { CatchReturn, ReturnUserAnalytics } from "@/lib/actions/type";
-import { Suspense, useState } from "react";
+// import { CatchReturn, ReturnUserAnalytics } from "@/lib/actions/type";
+import { useState } from "react";
 
-interface AnalyticsPageProps {
-  analytics: Promise<ReturnUserAnalytics | CatchReturn>;
-}
+// interface AnalyticsPageProps {
+//   analytics: Promise<ReturnUserAnalytics | CatchReturn>;
+// }
 
-const AnalyticsPage = ({ analytics }: AnalyticsPageProps) => {
+// const AnalyticsPage = ({ analytics }: AnalyticsPageProps) => {
+const AnalyticsPage = () => {
   const [timeFilter, setTimeFilter] = useState<"week" | "month" | "year">(
     "week"
   );
@@ -64,9 +65,9 @@ const AnalyticsPage = ({ analytics }: AnalyticsPageProps) => {
         />
       </div>
 
-      <Suspense fallback="Loading...">
+      {/* <Suspense fallback="Loading...">
         <StatsCards analytics={analytics} timeFilter={timeFilter} />
-      </Suspense>
+      </Suspense> */}
 
       <ChartSection data={currentData} />
 

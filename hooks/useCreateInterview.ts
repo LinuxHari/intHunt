@@ -3,7 +3,7 @@ import {
   CreateInterviewFormType,
   createInterviewSchema,
   QuestionFormType,
-} from "@/schema";
+} from "@/validators";
 import {
   createInterview,
   generateInterviewQuestions,

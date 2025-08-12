@@ -2,7 +2,7 @@ import { UseFormReturn } from "react-hook-form";
 import TimeTypeSelector from "@/components/interview/schedule/ScheduleTimeTypePicker";
 import PresetTimeSelector from "@/components/interview/schedule/SchedulePresetTimeSelector";
 import CustomTimeSelector from "@/components/interview/schedule/ScheduleCustomTimeSelector";
-import { ScheduleFormType } from "@/schema";
+import { ScheduleFormType } from "@/validators";
 
 interface ScheduleTimeSelectorProps {
   form: UseFormReturn<ScheduleFormType>;

@@ -6,6 +6,7 @@ import { interviewer } from "@/constants";
 import { manageInterviewCompletion } from "@/lib/actions/general.action";
 import { toast } from "sonner";
 import { completedAnalytics } from "@/lib/analytics";
+import env from "@/env";
 
 export enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -114,7 +115,7 @@ const useInterviewAgent = ({
     setCallStatus(CallStatus.CONNECTING);
 
     if (type === "generate") {
-      await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
+      await vapi.start(env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
         variableValues: {
           username: user.name,
           userid: user.id,

@@ -1,7 +1,7 @@
 import React, { use } from "react";
 import StatCard from "./StatCard";
 import { CatchReturn, ReturnUpcoming } from "@/lib/actions/type";
-import { Calendar, Clock, Play } from "lucide-react";
+import { Calendar, Play } from "lucide-react";
 
 interface UpcomingInterviewsStatsProps {
   upcomingInterviewsStats: Promise<ReturnUpcoming | CatchReturn>;
@@ -15,19 +15,19 @@ const UpcomingInterviewsStats = ({
   if (!stats.success) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <StatCard
         icon={Calendar}
         value={stats.upcomingStats.totalScheduled}
         label="Total Scheduled"
         bgColor="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400"
       />
-      <StatCard
+      {/* <StatCard
         icon={Clock}
         value={stats.upcomingStats.dueToday}
         label="Due Today"
         bgColor="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400"
-      />
+      /> */}
       <StatCard
         icon={Play}
         value={stats.upcomingStats.averageQuestions}
