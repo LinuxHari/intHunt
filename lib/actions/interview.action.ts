@@ -346,7 +346,7 @@ export const getInterviewsWithQuery = async ({
             : sortColumn
         )
         .limit(offset)
-        .offset(skip) as unknown as Promise<Interview[]>,
+        .offset(skip),
       db.select({ count: count() }).from(interviews).where(searchQuery),
     ]);
 
