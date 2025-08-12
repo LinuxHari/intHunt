@@ -290,15 +290,7 @@ export const getInterviewsWithQuery = async ({
 
     const searchQuery = and(baseConditions, ...searchConditions);
 
-    const sortColumn =
-      sortType === "rating"
-        ? sql`${interviews.rating}.average DESC`
-        : sortType === "attendees"
-        ? sql`${interviews.attendees} DESC`
-        : sortType === "questions"
-        ? sql`${interviews.questionCount} DESC`
-        : sql`${interviews.rating}.average DESC`;
-
+    // Rank expression
     const tsRank = sql`ts_rank(
       setweight(to_tsvector('english', ${interviews.role}), 'A') || 
       setweight(to_tsvector('english', (
@@ -308,6 +300,16 @@ export const getInterviewsWithQuery = async ({
       to_tsquery('english', ${tsQueryTerm})
     )`;
 
+    // Main sort column
+    const sortColumn =
+      sortType === "rating"
+        ? sql`CAST(${interviews.rating} ->> 'average' AS FLOAT) DESC`
+        : sortType === "attendees"
+        ? desc(interviews.attendees)
+        : sortType === "questions"
+        ? desc(interviews.questionCount)
+        : sql`CAST(${interviews.rating} ->> 'average' AS FLOAT) DESC`;
+
     const [searchResults, totalCountResult] = await Promise.all([
       db
         .selectDistinct({
@@ -316,6 +318,9 @@ export const getInterviewsWithQuery = async ({
           techstack: interviews.techstack,
           type: interviews.type,
           rating: interviews.rating,
+          avg_rating: sql`CAST(${interviews.rating} ->> 'average' AS FLOAT)`.as(
+            "avg_rating"
+          ),
           isDeleted: interviews.isDeleted,
           description: interviews.description,
           questions: interviews.questions,
@@ -329,9 +334,20 @@ export const getInterviewsWithQuery = async ({
         })
         .from(interviews)
         .where(searchQuery)
-        .orderBy(sql`"ts_rank" DESC`, sortColumn)
+        .orderBy(
+          sortType === "rating" ||
+            sortType === "attendees" ||
+            sortType === "questions"
+            ? sortColumn
+            : sql`ts_rank DESC`,
+          sortType === "rating" ||
+            sortType === "attendees" ||
+            sortType === "questions"
+            ? sql`ts_rank DESC`
+            : sortColumn
+        )
         .limit(offset)
-        .offset(skip),
+        .offset(skip) as unknown as Promise<Interview[]>,
       db.select({ count: count() }).from(interviews).where(searchQuery),
     ]);
 
