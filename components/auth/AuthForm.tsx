@@ -6,16 +6,20 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-
 import { signIn, signUp } from "@/lib/actions/auth.action";
 import FormField from "./FormField";
 import Logo from "../shared/Logo";
 import { signinFormSchema, signupFormSchema } from "@/validators";
+import { cn } from "@/lib/utils";
 
-const AuthForm = ({ type }: { type: FormType }) => {
+interface AuthFormProps {
+  type: FormType;
+  isModal?: boolean;
+}
+
+const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
   const router = useRouter();
 
   const formSchema = type === "sign-in" ? signinFormSchema : signupFormSchema;
@@ -57,7 +61,11 @@ const AuthForm = ({ type }: { type: FormType }) => {
         if (!result.success) return toast.error(result.message);
 
         toast.success("Signed in successfully.");
-        router.push("/");
+        if (isModal) {
+          router.back();
+        } else {
+          router.push("/");
+        }
       }
     } catch (error) {
       console.log(error);
@@ -68,8 +76,15 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const isSignIn = type === "sign-in";
 
   return (
-    <div className="card-border lg:min-w-[566px]">
-      <div className="flex flex-col items-center gap-6 card py-14 px-10">
+    <div
+      className={cn(null, isModal ? "w-full" : "lg:min-w-[566px] card-border")}
+    >
+      <div
+        className={cn(
+          "flex flex-col items-center gap-6 w-full",
+          isModal ? "bg-background py-10 px-5" : "card py-14 px-10"
+        )}
+      >
         <Logo />
 
         <h3 className="text-primary">Nail Your Interview with AI</h3>

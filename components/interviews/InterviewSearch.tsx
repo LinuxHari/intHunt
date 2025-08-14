@@ -16,7 +16,9 @@ const InterviewSearch = ({
   const debouncedSearch = useDebounce(query);
 
   useEffect(() => {
-    onSearchChange(debouncedSearch);
+    if (searchQuery !== query) {
+      onSearchChange(debouncedSearch);
+    }
   }, [debouncedSearch]);
 
   return (

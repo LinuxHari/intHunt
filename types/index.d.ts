@@ -93,7 +93,7 @@ interface InterviewCardProps {
 }
 
 interface AgentProps {
-  user: User;
+  user: User | null;
   interview: Interview;
   feedbackId?: string;
   type: "generate" | "interview";

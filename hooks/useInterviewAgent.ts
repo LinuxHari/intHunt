@@ -25,7 +25,7 @@ const useInterviewAgent = ({
   user,
   type,
   interview,
-}: AgentProps) => {
+}: AgentProps & { user: User }) => {
   const router = useRouter();
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, setMessages] = useState<SavedMessage[]>([]);

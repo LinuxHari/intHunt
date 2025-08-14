@@ -12,7 +12,7 @@ import InterviewBadges from "@/components/dashboard/publishedInterviews/Intervie
 interface InterviewPageProps {
   feedback: Feedback | null;
   interview: Interview;
-  user: User;
+  user: User | null;
 }
 
 const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
@@ -25,13 +25,6 @@ const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
               <div className="flex flex-col sm:flex-row gap-4 justify-between items-start">
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                   <div className="flex flex-row gap-4 items-center">
-                    {/* <Image
-                      src={getRandomInterviewCover() || "/placeholder.svg"}
-                      alt="Interview cover"
-                      width={60}
-                      height={60}
-                      className="rounded-full object-cover size-[60px] border-2 border-slate-200 dark:border-slate-700"
-                    /> */}
                     <div>
                       <h1 className="text-2xl font-bold text-slate-900 dark:text-white capitalize">
                         {interview.role} Interview
@@ -41,11 +34,6 @@ const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
                       </p>
                     </div>
                   </div>
-                  <DisplayTechIcons
-                    techStack={interview.techstack}
-                    slice={false}
-                    className="justify-start"
-                  />
                 </div>
 
                 <div className="flex gap-2">
@@ -61,8 +49,14 @@ const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
                   )}
                 </div>
               </div>
-
-              <div className="flex items-center gap-6 mt-4 text-sm text-slate-600 dark:text-slate-400">
+              <div className="my-4">
+                <DisplayTechIcons
+                  techStack={interview.techstack}
+                  slice={false}
+                  className="justify-start"
+                />
+              </div>
+              <div className="flex items-center gap-6 text-sm text-slate-600 dark:text-slate-400">
                 <InterviewCardStats
                   rating={interview.rating}
                   questions={interview.questionCount}
