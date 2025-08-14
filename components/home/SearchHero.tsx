@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -9,14 +9,17 @@ import { searchAnalytics } from "@/lib/analytics";
 
 const SearchHero = () => {
   const [query, setQuery] = useState("");
+  const [isSearching, startTransition] = useTransition();
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedQuery = query.trim();
     if (trimmedQuery) {
-      searchAnalytics(trimmedQuery);
-      router.push(`/interviews?search=${encodeURIComponent(trimmedQuery)}`);
+      startTransition(() => {
+        searchAnalytics(trimmedQuery);
+        router.push(`/interviews?search=${encodeURIComponent(trimmedQuery)}`);
+      });
     }
   };
 
@@ -31,7 +34,9 @@ const SearchHero = () => {
           className="pl-10"
         />
       </div>
-      <Button type="submit">Search</Button>
+      <Button type="submit" disabled={isSearching}>
+        {isSearching ? "Searching" : "Search"}
+      </Button>
     </form>
   );
 };
