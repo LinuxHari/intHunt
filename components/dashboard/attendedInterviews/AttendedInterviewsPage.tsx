@@ -6,6 +6,7 @@ import {
   ReturnAttendedInterviews,
 } from "@/lib/actions/type";
 import { Suspense } from "react";
+import { InterviewCardsLoading, StatsCardLoading } from "../Loader";
 
 interface AttendedInterviewPage {
   attendedInterviews: Promise<ReturnAttendedInterviews | CatchReturn>;
@@ -26,10 +27,10 @@ const AttendedInterviewsPage = ({
           Review your completed interviews and performance
         </p>
       </div>
-      <Suspense fallback="Loading...">
+      <Suspense fallback={<StatsCardLoading />}>
         <AttendedStats attendedStats={attendedStats} />
       </Suspense>
-      <Suspense fallback="Loading...">
+      <Suspense fallback={<InterviewCardsLoading />}>
         <AttendedInterviewsList attendedInterviews={attendedInterviews} />
       </Suspense>
     </div>

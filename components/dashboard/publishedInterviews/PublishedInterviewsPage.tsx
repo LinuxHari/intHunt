@@ -7,6 +7,7 @@ import {
   ReturnPublishedInterviews,
 } from "@/lib/actions/type";
 import { Suspense } from "react";
+import { InterviewCardsLoading, StatsCardLoading } from "../Loader";
 
 interface PublishedInterviewsPageProps {
   publishedStats: Promise<ReturnPublished | CatchReturn>;
@@ -20,10 +21,10 @@ const PublishedInterviewsPage = ({
   return (
     <div className="space-y-8">
       <InterviewsHeader />
-      <Suspense fallback="Loading...">
+      <Suspense fallback={<StatsCardLoading />}>
         <InterviewsStats publishedStats={publishedStats} />
       </Suspense>
-      <Suspense fallback="Loading...">
+      <Suspense fallback={<InterviewCardsLoading />}>
         <InterviewsList publishedInterviews={publishedInterviews} />
       </Suspense>
     </div>

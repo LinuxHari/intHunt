@@ -1,7 +1,6 @@
 "use client";
 
 import { z } from "zod";
-import Link from "next/link";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -82,12 +81,14 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
       <div
         className={cn(
           "flex flex-col items-center gap-6 w-full",
-          isModal ? "bg-background py-10 px-5" : "card py-14 px-10"
+          isModal ? "bg-background md:px-5" : "card py-14 px-10"
         )}
       >
         <Logo />
 
-        <h3 className="text-primary">Nail Your Interview with AI</h3>
+        <h3 className="text-primary text-center">
+          Nail Your Interview with AI
+        </h3>
 
         <Form {...form}>
           <form
@@ -136,14 +137,14 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
           </form>
         </Form>
 
-        <p className="text-center text-black dark:text-white">
+        <p className="text-center text-slate-900 dark:text-white">
           {isSignIn ? "No account yet?" : "Have an account already?"}
-          <Link
+          <a // Making full page reload and preventing route being intercepted
             href={!isSignIn ? "/sign-in" : "/sign-up"}
-            className="font-bold text-primary ml-1"
+            className="font-semibold text-primary ml-1"
           >
             {!isSignIn ? "Sign In" : "Sign Up"}
-          </Link>
+          </a>
         </p>
       </div>
     </div>

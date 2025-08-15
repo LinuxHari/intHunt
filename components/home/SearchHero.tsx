@@ -35,7 +35,7 @@ const SearchHero = () => {
         />
       </div>
       <Button type="submit" disabled={isSearching}>
-        {isSearching ? "Searching" : "Search"}
+        {isSearching ? "Searching..." : "Search"}
       </Button>
     </form>
   );

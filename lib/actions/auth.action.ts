@@ -14,7 +14,7 @@ export const signUp = async (params: SignUpParams) => {
         data: {
           name: params.name,
         },
-        emailRedirectTo: env.NEXT_PUBLIC_BASE_URL,
+        emailRedirectTo: `${env.NEXT_PUBLIC_BASE_URL}/sign-in`,
       },
     });
 

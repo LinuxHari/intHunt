@@ -51,13 +51,13 @@ const UnauthenticatedAgent = () => {
       <div className="call-view w-full max-w-2xl">
         <InterviewerCard isSpeaking={false} />
       </div>
-      <div className="w-full flex justify-center">
+      <p className="w-full text-center text-slate-900 dark:text-white">
         You must&nbsp;
-        <Link href="/sign-in" className="text-primary">
+        <Link href="/sign-in" className="text-primary underline decoration-1">
           Log In
         </Link>
         &nbsp;to attend this interview
-      </div>
+      </p>
     </div>
   );
 };

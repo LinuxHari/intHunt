@@ -4,7 +4,12 @@ import { ReactNode } from "react";
 // import { isAuthenticated } from "@/lib/actions/auth.action";
 import Navigation from "@/components/layouts/Navigation";
 
-const Layout = async ({ children }: { children: ReactNode }) => {
+const Layout = async ({
+  children,
+}: {
+  children: ReactNode;
+  modal: ReactNode;
+}) => {
   // const isUserAuthenticated = await isAuthenticated();
   // if (!isUserAuthenticated) redirect("/sign-in");
 

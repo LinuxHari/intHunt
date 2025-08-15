@@ -6,6 +6,7 @@ import {
 import UpcomingInterviewsList from "./UpcomingInterviewsList";
 // import UpcomingInterviewsStats from "./UpcomingInterviewsStats";
 import { Suspense } from "react";
+import { InterviewCardsLoading } from "../Loader";
 
 interface UpcomingInterviewsPageProps {
   upcomingInterviews: Promise<ReturnUpcomingInterviews | CatchReturn>;
@@ -26,12 +27,12 @@ UpcomingInterviewsPageProps) => {
           Prepare for your scheduled interviews
         </p>
       </div>
-      {/* <Suspense fallback="Loading...">
+      {/* <Suspense fallback={<StatsCardLoading />}>
         <UpcomingInterviewsStats
           upcomingInterviewsStats={upcomingInterviewsStats}
         />
       </Suspense> */}
-      <Suspense fallback="Loading...">
+      <Suspense fallback={<InterviewCardsLoading />}>
         <UpcomingInterviewsList upcomingInterviews={upcomingInterviews} />
       </Suspense>
     </div>

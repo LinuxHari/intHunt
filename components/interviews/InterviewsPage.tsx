@@ -7,6 +7,7 @@ import InterviewsList from "./InterviewsList";
 import NoInterviews from "./NoInterviews";
 import ScheduleModal from "../interview/schedule/ScheduleModal";
 import useInterviews, { InterviewsPageProps } from "@/hooks/useInterviews";
+import { InterviewCardsLoading } from "../dashboard/Loader";
 
 const InterviewsPage = ({
   searchParams,
@@ -47,7 +48,7 @@ const InterviewsPage = ({
 
       <div className="space-y-6">
         {isFiltering ? (
-          <div className="text-center p-8">Loading results...</div>
+          <InterviewCardsLoading />
         ) : interviewsList.length > 0 ? (
           <InterviewsList
             interviews={interviewsList}

@@ -13,8 +13,8 @@ const Hero = () => {
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
               Ace Your Interviews with{" "}
-              <span className="text-primary">AI-Driven</span> Practice &
-              Feedback
+              <span className="text-primary text-nowrap">AI-Driven</span>{" "}
+              Practice & Feedback
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-lg">
               Get ready for your next interview with practice questions and

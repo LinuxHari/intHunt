@@ -74,7 +74,7 @@ const MobileNavigation = ({ user }: MobileNavigationProps) => {
             <div className="flex items-center justify-start gap-2 p-3 border-b border-gray-200 dark:border-gray-800">
               <div className="flex flex-col space-y-1 leading-none">
                 {user?.name && (
-                  <p className="font-medium text-sm text-black dark:text-white">
+                  <p className="font-medium text-sm text-slate-900 dark:text-white">
                     {user.name}
                   </p>
                 )}
