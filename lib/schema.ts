@@ -8,8 +8,6 @@ import {
   timestamp,
   jsonb,
   pgEnum,
-  date,
-  decimal,
   uuid,
   index,
   uniqueIndex,
@@ -62,8 +60,6 @@ export const scheduledInterviews = pgTable("scheduledInterviews", {
     .notNull()
     .references(() => interviews.id),
   userId: varchar("user_id", { length: 36 }).notNull(),
-  email: varchar("email", { length: 100 }).notNull(),
-  role: varchar("role", { length: 50 }).notNull(),
   scheduledAt: timestamp("scheduled_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   timezone: varchar("timezone", { length: 128 }).notNull(),
@@ -85,35 +81,6 @@ export const feedback = pgTable("feedback", {
     .notNull(),
   finalAssessment: varchar("final_assessment").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const userStats = pgTable("user_stats", {
-  userId: varchar("user_id", { length: 36 }).primaryKey().notNull(),
-  totalPublishedInterviews: integer("total_published_interviews")
-    .notNull()
-    .default(0),
-  activePublishedInterviews: integer("active_published_interviews")
-    .notNull()
-    .default(0),
-  totalAttendedInterviews: integer("total_attended_interviews")
-    .notNull()
-    .default(0),
-  averageScore: integer("average_score").notNull().default(0),
-  averageQuestionCount: integer("average_question_count").notNull().default(0),
-});
-
-export const dailyStats = pgTable("daily_stats", {
-  id: uuid("id").defaultRandom().primaryKey().notNull(),
-  userId: varchar("user_id", { length: 36 }).notNull(),
-  date: date("date").notNull(),
-  interviewCount: integer("interview_count").notNull().default(0),
-  averageScore: decimal("average_score", { precision: 5, scale: 2 })
-    .notNull()
-    .default("0.00"),
-  totalScore: integer("total_score").notNull().default(0),
-  totalQuestions: integer("total_questions").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const interviewsRelations = relations(interviews, ({ many }) => ({

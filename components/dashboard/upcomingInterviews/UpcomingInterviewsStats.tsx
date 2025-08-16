@@ -15,7 +15,7 @@ const UpcomingInterviewsStats = ({
   if (!stats.success) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <StatCard
         icon={Calendar}
         value={stats.upcomingStats.totalScheduled}
@@ -31,7 +31,7 @@ const UpcomingInterviewsStats = ({
       <StatCard
         icon={Play}
         value={stats.upcomingStats.averageQuestions}
-        label="Avg Duration"
+        label="Average Questions"
         bgColor="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400"
       />
     </div>

@@ -49,7 +49,7 @@ const ScoreChart = ({ data }: ScoreTrendChartProps) => {
                 tick={{ fill: "rgb(100 116 139)", fontSize: 12 }}
                 className="dark:[&_text]:fill-slate-300"
                 dx={-10}
-                domain={["dataMin - 5", "dataMax + 5"]}
+                domain={["dataMin + 0", "dataMax + 5"]}
               />
               <ChartTooltip
                 content={({ active, payload, label }) => {

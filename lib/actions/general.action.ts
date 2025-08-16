@@ -123,7 +123,7 @@ export const getFeedbackByInterviewId = async (
       )
       .limit(1);
 
-    return feedbackResult.length > 0 ? (feedbackResult[0] as Feedback) : null;
+    return feedbackResult.length > 0 ? feedbackResult[0] : null;
   } catch (error) {
     console.error("Error getting feedback by interview ID:", error);
     return null;

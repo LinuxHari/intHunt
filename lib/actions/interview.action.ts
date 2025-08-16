@@ -367,7 +367,7 @@ export const getInterviewsWithQuery = async ({
 
 export const scheduleInterview = async (scheduleDetails: ScheduleDetails) => {
   try {
-    const { interviewId, role, date, time, timezone } = scheduleDetails;
+    const { interviewId, date, time, timezone } = scheduleDetails;
     const user = await getCurrentUser();
     if (!user) throw "Please log in to schedule interviews";
 
@@ -379,8 +379,6 @@ export const scheduleInterview = async (scheduleDetails: ScheduleDetails) => {
     await db.insert(scheduledInterviews).values({
       interviewId,
       userId: user.id,
-      email: user.email,
-      role,
       scheduledAt: scheduledDateTime,
       timezone,
     });
@@ -392,17 +390,30 @@ export const scheduleInterview = async (scheduleDetails: ScheduleDetails) => {
   }
 };
 
-export const getInterviewRecommendations = async () => {
+export const getInterviewRecommendations = async (): Promise<
+  { success: true; recommendations: Interview[] } | CatchReturn
+> => {
   try {
     const user = await getCurrentUser();
     if (!user) throw "User not found";
-    const recommendations = await runBigQueryQuery(
+    const recommendations = (await runBigQueryQuery(
       getRecommendationsQuery(user.id)
-    );
-    return { success: true, recommendations };
+    )) as { item_id: string; predicted_interaction_score: number }[];
+
+    const recommendedInterviews = await db
+      .select()
+      .from(interviews)
+      .where(
+        inArray(
+          interviews.id,
+          recommendations.map((r) => r.item_id)
+        )
+      );
+
+    return { success: true, recommendations: recommendedInterviews };
   } catch (error: unknown) {
     console.error(error, "error occured while getting recommendations");
-    return { success: false };
+    return { success: false, message: "Failed to get recommendations" };
   }
 };
 

@@ -1,28 +1,22 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CatchReturn, ReturnUserRecents } from "@/lib/actions/type";
 import { Users } from "lucide-react";
+import { use } from "react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
-const RecentPerformance = () => {
-  const recentPerformance = [
-    {
-      role: "Frontend Developer",
-      score: 92,
-      date: "2 days ago",
-      type: "Technical",
-    },
-    {
-      role: "Product Manager",
-      score: 88,
-      date: "5 days ago",
-      type: "Behavioral",
-    },
-    {
-      role: "Full Stack Developer",
-      score: 85,
-      date: "1 week ago",
-      type: "Mixed",
-    },
-  ];
+dayjs.extend(relativeTime);
+
+interface RecentPerformanceProps {
+  recents: Promise<ReturnUserRecents | CatchReturn>;
+}
+
+const RecentPerformance = ({ recents }: RecentPerformanceProps) => {
+  const recentPerformance = use(recents);
+
+  if (!recentPerformance.success || !recentPerformance.recents.length)
+    return null;
 
   return (
     <Card>
@@ -31,7 +25,7 @@ const RecentPerformance = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {recentPerformance.map((interview, index) => (
+          {recentPerformance.recents.map((interview, index) => (
             <div
               key={index}
               className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-slate-200 dark:border-slate-800 rounded-lg gap-4"
@@ -45,7 +39,7 @@ const RecentPerformance = () => {
                     {interview.role}
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {interview.date}
+                    {dayjs(interview.attendedAt).fromNow()}
                   </p>
                 </div>
               </div>

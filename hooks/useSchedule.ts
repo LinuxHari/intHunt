@@ -43,7 +43,6 @@ const useSchedule = (
         date: dayjs(values.date).format("YYYY-MM-DD"),
         time: finalTime,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        role: interview.role,
       });
 
       if (success) {

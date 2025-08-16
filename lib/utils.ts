@@ -2,6 +2,7 @@
 import { clsx, type ClassValue } from "clsx";
 import dayjs, { Dayjs } from "dayjs";
 import { twMerge } from "tailwind-merge";
+import { AnalyticsData, AnalyticsQueryRow, Duration } from "./actions/type";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -119,4 +120,153 @@ export const generateCalendarDays = (currentMonth: Dayjs) => {
   }
 
   return days;
+};
+
+export const getAnalyticsDateRangesAndGrouping = (
+  duration: Duration,
+  now: Date
+) => {
+  const currentDate = dayjs(now);
+
+  switch (duration) {
+    case "week": {
+      const startOfCurrentWeek = currentDate.startOf("week").add(1, "day");
+      const endOfCurrentWeek = currentDate;
+
+      const startOfPreviousWeek = startOfCurrentWeek.subtract(1, "week");
+      const endOfPreviousWeek = startOfCurrentWeek.subtract(1, "day");
+
+      return {
+        currentStart: startOfCurrentWeek.toDate(),
+        currentEnd: endOfCurrentWeek.toDate(),
+        previousStart: startOfPreviousWeek.toDate(),
+        previousEnd: endOfPreviousWeek.toDate(),
+        groupBy: "DATE_PART('dow', f.created_at)",
+        periodSelect: `CASE 
+          WHEN DATE_PART('dow', f.created_at) = 0 THEN 'Sunday'
+          WHEN DATE_PART('dow', f.created_at) = 1 THEN 'Monday'
+          WHEN DATE_PART('dow', f.created_at) = 2 THEN 'Tuesday'
+          WHEN DATE_PART('dow', f.created_at) = 3 THEN 'Wednesday'
+          WHEN DATE_PART('dow', f.created_at) = 4 THEN 'Thursday'
+          WHEN DATE_PART('dow', f.created_at) = 5 THEN 'Friday'
+          WHEN DATE_PART('dow', f.created_at) = 6 THEN 'Saturday'
+        END`,
+      };
+    }
+
+    case "month": {
+      const startOfCurrentMonth = currentDate.startOf("month");
+      const endOfCurrentMonth = currentDate;
+
+      const startOfPreviousMonth = startOfCurrentMonth.subtract(1, "month");
+      const endOfPreviousMonth = startOfCurrentMonth.subtract(1, "day");
+
+      return {
+        currentStart: startOfCurrentMonth.toDate(),
+        currentEnd: endOfCurrentMonth.toDate(),
+        previousStart: startOfPreviousMonth.toDate(),
+        previousEnd: endOfPreviousMonth.toDate(),
+        groupBy: "CEIL(DATE_PART('day', f.created_at) / 7.0)",
+        periodSelect: `CONCAT('Week ', CEIL(DATE_PART('day', f.created_at) / 7.0))`,
+      };
+    }
+
+    case "year": {
+      const startOfCurrentYear = currentDate.startOf("year");
+      const endOfCurrentYear = currentDate;
+
+      const startOfPreviousYear = startOfCurrentYear.subtract(1, "year");
+      const endOfPreviousYear = startOfCurrentYear.subtract(1, "day");
+
+      return {
+        currentStart: startOfCurrentYear.toDate(),
+        currentEnd: endOfCurrentYear.toDate(),
+        previousStart: startOfPreviousYear.toDate(),
+        previousEnd: endOfPreviousYear.toDate(),
+        groupBy: "DATE_PART('month', f.created_at)",
+        periodSelect: `CASE 
+          WHEN DATE_PART('month', f.created_at) = 1 THEN 'January'
+          WHEN DATE_PART('month', f.created_at) = 2 THEN 'February'
+          WHEN DATE_PART('month', f.created_at) = 3 THEN 'March'
+          WHEN DATE_PART('month', f.created_at) = 4 THEN 'April'
+          WHEN DATE_PART('month', f.created_at) = 5 THEN 'May'
+          WHEN DATE_PART('month', f.created_at) = 6 THEN 'June'
+          WHEN DATE_PART('month', f.created_at) = 7 THEN 'July'
+          WHEN DATE_PART('month', f.created_at) = 8 THEN 'August'
+          WHEN DATE_PART('month', f.created_at) = 9 THEN 'September'
+          WHEN DATE_PART('month', f.created_at) = 10 THEN 'October'
+          WHEN DATE_PART('month', f.created_at) = 11 THEN 'November'
+          WHEN DATE_PART('month', f.created_at) = 12 THEN 'December'
+        END`,
+      };
+    }
+
+    default:
+      throw `Unsupported duration: ${duration}`;
+  }
+};
+
+const buildExpectedPeriods = (
+  duration: Duration,
+  start: Date,
+  end: Date,
+  currentEnd: Date
+): string[] => {
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  if (duration === "week") {
+    const startIdx = start.getDay();
+    return Array.from(
+      { length: currentEnd.getDay() },
+      (_, i) => dayNames[(startIdx + i) % 7]
+    );
+  }
+
+  if (duration === "month") {
+    const endDay = end.getDate();
+    const weeks = Math.ceil(endDay / 7);
+    return Array.from({ length: weeks }, (_, i) => `Week ${i + 1}`);
+  }
+
+  const endMonthIdx = end.getMonth();
+  return monthNames.slice(0, endMonthIdx + 1);
+};
+
+export const formatAnalytics = (
+  rows: AnalyticsQueryRow[],
+  dur: Duration,
+  start: Date,
+  end: Date,
+  currentEnd: Date
+): AnalyticsData[] => {
+  const expected = buildExpectedPeriods(dur, start, end, currentEnd);
+
+  const map = new Map<string, AnalyticsQueryRow>();
+  for (const r of rows) {
+    if (r.period) map.set(r.period, r);
+  }
+
+  return expected.map<AnalyticsData>((label) => {
+    const r = map.get(label);
+    return {
+      period: label,
+      totalAttendedInterviews: r?.total_attended_interviews ?? 0,
+      averageScore: Number(r?.average_score ?? 0),
+      averageQuestions: Number(r?.average_questions ?? 0),
+    };
+  });
 };

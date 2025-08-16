@@ -22,18 +22,21 @@ import { useState } from "react";
 import { updateProfile } from "@/lib/actions/user.action";
 import { toast } from "sonner";
 
-const UserProfileForm = () => {
+interface UserProfileFormProps {
+  user: User;
+}
+
+const UserProfileForm = ({ user }: UserProfileFormProps) => {
   const [avatarPreview, setAvatarPreview] =
     useState<string>("/placeholder.svg");
 
   const form = useForm<ProfileFormType>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: "Demo User",
-      email: "demo@example.com",
-      role: "Full Stack Developer",
-      about:
-        "Passionate developer with 5+ years of experience in building scalable web applications.",
+      name: user.name,
+      email: user.email,
+      role: user.role || "",
+      about: user.about || "",
     },
   });
 
@@ -82,7 +85,9 @@ const UserProfileForm = () => {
                     src={avatarPreview || "/placeholder.svg"}
                     alt="Profile picture"
                   />
-                  <AvatarFallback className="text-lg">DU</AvatarFallback>
+                  <AvatarFallback className="text-3xl">
+                    {user.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <label className="absolute bottom-0 right-0 bg-primary text-white rounded-full p-2 cursor-pointer transition-colors">
                   <Camera className="h-4 w-4" />

@@ -2,12 +2,14 @@ import UserProfileForm from "@/components/dashboard/profile/UserProfileForm";
 import UpdatePasswordForm from "@/components/dashboard/profile/UpdatePasswordForm";
 import ProfileStats from "@/components/dashboard/profile/ProfileStats";
 import { ReturnProfile } from "@/lib/actions/type";
+import ProfileActions from "./ProfileActions";
 
 interface ProfilePageProps {
   profileStats: ReturnProfile;
+  user: User;
 }
 
-const ProfilePage = ({ profileStats }: ProfilePageProps) => {
+const ProfilePage = ({ profileStats, user }: ProfilePageProps) => {
   return (
     <div className="space-y-8">
       <div>
@@ -21,10 +23,13 @@ const ProfilePage = ({ profileStats }: ProfilePageProps) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          <UserProfileForm />
+          <UserProfileForm user={user} />
           <UpdatePasswordForm />
         </div>
-        <ProfileStats profileStats={profileStats} />
+        <div className="space-y-6">
+          <ProfileStats profileStats={profileStats} />
+          <ProfileActions />
+        </div>
       </div>
     </div>
   );

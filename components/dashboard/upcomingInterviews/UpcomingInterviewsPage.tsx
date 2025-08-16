@@ -1,22 +1,22 @@
 import {
   CatchReturn,
-  // ReturnUpcoming,
+  ReturnUpcoming,
   ReturnUpcomingInterviews,
 } from "@/lib/actions/type";
 import UpcomingInterviewsList from "./UpcomingInterviewsList";
-// import UpcomingInterviewsStats from "./UpcomingInterviewsStats";
+import UpcomingInterviewsStats from "./UpcomingInterviewsStats";
 import { Suspense } from "react";
-import { InterviewCardsLoading } from "../Loader";
+import { InterviewCardsLoading, StatsCardLoading } from "../Loader";
 
 interface UpcomingInterviewsPageProps {
   upcomingInterviews: Promise<ReturnUpcomingInterviews | CatchReturn>;
-  // upcomingInterviewsStats: Promise<ReturnUpcoming | CatchReturn>;
+  upcomingInterviewsStats: Promise<ReturnUpcoming | CatchReturn>;
 }
 
 const UpcomingInterviewsPage = ({
   upcomingInterviews,
-}: // upcomingInterviewsStats,
-UpcomingInterviewsPageProps) => {
+  upcomingInterviewsStats,
+}: UpcomingInterviewsPageProps) => {
   return (
     <div className="space-y-8 p-6">
       <div>
@@ -27,11 +27,11 @@ UpcomingInterviewsPageProps) => {
           Prepare for your scheduled interviews
         </p>
       </div>
-      {/* <Suspense fallback={<StatsCardLoading />}>
+      <Suspense fallback={<StatsCardLoading />}>
         <UpcomingInterviewsStats
           upcomingInterviewsStats={upcomingInterviewsStats}
         />
-      </Suspense> */}
+      </Suspense>
       <Suspense fallback={<InterviewCardsLoading />}>
         <UpcomingInterviewsList upcomingInterviews={upcomingInterviews} />
       </Suspense>

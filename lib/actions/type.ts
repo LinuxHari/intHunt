@@ -9,21 +9,30 @@ export type ReturnPublishedInterviews = {
   totalCounts: number;
 };
 
-interface AnalyticsRecord {
-  count: number;
+export interface AnalyticsData {
+  period: string;
+  totalAttendedInterviews: number;
   averageScore: number;
-  totalScore: number;
-  totalQuestions: number;
+  averageQuestions: number;
 }
 
-export type ReturnUserAnalytics = {
+export interface AnalyticsQueryRow {
+  time_frame: "current" | "previous";
+  period: string;
+  total_attended_interviews: number | null;
+  average_score: number | null;
+  average_questions: number | null;
+}
+
+export interface ReturnUserAnalytics {
   success: true;
   analytics: {
-    week: Record<string, AnalyticsRecord>;
-    month: Record<string, AnalyticsRecord>;
-    year: Record<string, AnalyticsRecord>;
+    currentPeriod: AnalyticsData[];
+    previousPeriod: AnalyticsData[];
   };
-};
+}
+
+export type Duration = "week" | "month" | "year";
 
 export type ReturnUserRecents = {
   success: true;
@@ -123,7 +132,6 @@ export type ReturnInterviewSearch = {
 
 export type ScheduleDetails = {
   interviewId: string;
-  role: string;
   date: string;
   time: string;
   timezone: string;

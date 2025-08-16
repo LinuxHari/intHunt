@@ -95,6 +95,21 @@ export const signOut = async () => {
   }
 };
 
+export const deleteUser = async () => {
+  try {
+    const supabase = await createClient();
+    const user = await getCurrentUser();
+
+    if (!user) throw "User is not authenticated";
+
+    await supabase.auth.admin.deleteUser(user.id);
+    return { success: true };
+  } catch (error: unknown) {
+    console.error("An error occured while deleting user", error);
+    return { success: false };
+  }
+};
+
 export const getCurrentUser = async (): Promise<User | null> => {
   try {
     const supabase = await createClient();

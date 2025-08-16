@@ -11,17 +11,15 @@ import {
   ReturnProfile,
   ReturnPublished,
   ReturnUpcoming,
+  ReturnUserAnalytics,
   ReturnUserRecents,
+  Duration,
+  AnalyticsQueryRow,
 } from "./type";
 import { db } from "@/drizzle";
-import {
-  dailyStats,
-  feedback,
-  interviews,
-  scheduledInterviews,
-  userStats,
-} from "../schema";
+import { feedback, interviews, scheduledInterviews } from "../schema";
 import { createClient } from "@/supabase/admin";
+import { formatAnalytics, getAnalyticsDateRangesAndGrouping } from "../utils";
 
 export const updateProfile = async (updatedProfile: ProfileFormType) => {
   try {
@@ -97,20 +95,6 @@ export const updatePassword = async (passwords: PasswordFormType) => {
   }
 };
 
-// export const getUserAnalytics = async (): Promise<
-//   ReturnUserAnalytics | CatchReturn
-// > => {
-//   try {
-//     const user = await getCurrentUser();
-//     if (!user) throw "Unauthorized user";
-
-//     return { success: true, analytics };
-//   } catch (err: unknown) {
-//     console.error(err);
-//     return { success: false, message: err };
-//   }
-// };
-
 export const getUserRecents = async (): Promise<
   ReturnUserRecents | CatchReturn
 > => {
@@ -138,14 +122,6 @@ export const getUserRecents = async (): Promise<
   }
 };
 
-const insertUserStat = (userId: string) => {
-  return db
-    .insert(userStats)
-    .values({ userId })
-    .onConflictDoNothing()
-    .returning();
-};
-
 export const getUpcomingStats = async (): Promise<
   ReturnUpcoming | CatchReturn
 > => {
@@ -170,20 +146,6 @@ export const getUpcomingStats = async (): Promise<
         )
       );
 
-    if (!upcomingStats.length) {
-      const stats = await insertUserStat(user.id);
-      if (!stats.length) {
-        throw "Failed to insert user stats";
-      }
-      return {
-        success: true,
-        upcomingStats: {
-          totalScheduled: 0,
-          averageQuestions: 0,
-        },
-      };
-    }
-
     return {
       success: true,
       upcomingStats: {
@@ -204,32 +166,38 @@ export const getPublishedStats = async (): Promise<
 > => {
   try {
     const user = await getCurrentUser();
-    if (!user) throw "Unauthorized user";
+    if (!user) throw new Error("Unauthorized user");
 
     const publishedStats = await db
       .select({
-        totalPublished: userStats.totalPublishedInterviews,
-        totalAttendees: userStats.totalAttendedInterviews,
-        active: userStats.activePublishedInterviews,
+        totalPublished: sql<number>`COUNT(DISTINCT ${interviews.id})`,
+        totalAttendees: sql<number>`COUNT(DISTINCT ${feedback.userId})`,
+        active: sql<number>`COUNT(DISTINCT CASE 
+          WHEN ${interviews.isDeleted} = false 
+          THEN ${interviews.id} 
+          ELSE NULL 
+        END)`,
       })
-      .from(userStats)
-      .limit(1);
+      .from(interviews)
+      .leftJoin(feedback, eq(interviews.id, feedback.interviewId))
+      .where(eq(interviews.publishedBy, user.id));
 
-    if (!publishedStats.length) {
-      const stats = await insertUserStat(user.id);
-      if (!stats.length) {
-        throw "Failed to insert user stats";
-      }
-      return {
-        success: true,
-        publishedStats: { totalAttendees: 0, totalPublished: 0, active: 0 },
-      };
-    }
+    const stats = publishedStats[0];
 
-    return { success: true, publishedStats: publishedStats[0] };
+    return {
+      success: true,
+      publishedStats: {
+        totalPublished: stats.totalPublished || 0,
+        totalAttendees: stats.totalAttendees || 0,
+        active: stats.active || 0,
+      },
+    };
   } catch (err: unknown) {
     console.error(err);
-    return { success: false, message: err };
+    return {
+      success: false,
+      message: err instanceof Error ? err.message : String(err),
+    };
   }
 };
 
@@ -238,37 +206,40 @@ export const getAttendedStats = async (): Promise<
 > => {
   try {
     const user = await getCurrentUser();
-    if (!user) throw "Unauthorized user";
+    if (!user) throw new Error("Unauthorized user");
 
     const attendedStats = await db
       .select({
-        averageScore: userStats.averageScore,
-        averageQuestions: userStats.averageQuestionCount,
-        completed: userStats.totalAttendedInterviews,
+        averageScore: sql<number>`ROUND(COALESCE(AVG(${feedback.totalScore}), 0), 2)`,
+        averageQuestions: sql<number>`ROUND(COALESCE(AVG(
+          CASE 
+            WHEN ${interviews.questionCount} IS NOT NULL AND ${interviews.questionCount} > 0 
+            THEN ${interviews.questionCount}
+            ELSE 10 
+          END
+        ), 0), 2)`,
+        completed: sql<number>`COUNT(DISTINCT ${feedback.interviewId})`,
       })
-      .from(userStats)
-      .where(eq(userStats.userId, user.id))
-      .limit(1);
+      .from(feedback)
+      .leftJoin(interviews, eq(feedback.interviewId, interviews.id))
+      .where(eq(feedback.userId, user.id));
 
-    if (!attendedStats.length) {
-      const stats = await insertUserStat(user.id);
-      if (!stats.length) {
-        throw "Failed to insert user stats";
-      }
-      return {
-        success: true,
-        attendedStats: {
-          averageScore: 0,
-          averageQuestions: 0,
-          completed: 0,
-        },
-      };
-    }
+    const stats = attendedStats[0];
 
-    return { success: true, attendedStats: attendedStats[0] };
+    return {
+      success: true,
+      attendedStats: {
+        averageScore: stats.averageScore || 0,
+        averageQuestions: stats.averageQuestions || 0,
+        completed: stats.completed || 0,
+      },
+    };
   } catch (err: unknown) {
     console.error(err);
-    return { success: false, message: err };
+    return {
+      success: false,
+      message: err instanceof Error ? err.message : String(err),
+    };
   }
 };
 
@@ -277,74 +248,137 @@ export const getProfileStats = async (): Promise<
 > => {
   try {
     const user = await getCurrentUser();
-    if (!user) throw "Unauthorized user";
+    if (!user) throw new Error("Unauthorized user");
 
-    const profileStats = await db
-      .select({
-        interviewsTaken: userStats.totalAttendedInterviews,
-        interviewsCreated: userStats.totalPublishedInterviews,
-        averageScore: userStats.averageScore,
-      })
-      .from(userStats)
-      .where(eq(userStats.userId, user.id))
-      .limit(1);
+    const profileStats = await db.execute(sql`
+      WITH user_stats AS (
+        SELECT 
+          COUNT(DISTINCT f.interview_id) as interviews_taken,
+          ROUND(COALESCE(AVG(f.total_score), 0), 2) as average_score
+        FROM ${feedback} f
+        WHERE f.user_id = ${user.id}
+      ),
+      created_stats AS (
+        SELECT 
+          COUNT(DISTINCT i.id) as interviews_created
+        FROM ${interviews} i
+        WHERE i.user_id = ${user.id}
+      )
+      SELECT 
+        COALESCE(us.interviews_taken, 0) as interviews_taken,
+        COALESCE(cs.interviews_created, 0) as interviews_created,
+        COALESCE(us.average_score, 0) as average_score
+      FROM user_stats us
+      CROSS JOIN created_stats cs
+    `);
 
-    if (!profileStats.length) {
-      const stats = await insertUserStat(user.id);
-      if (!stats.length) {
-        throw "Failed to insert user stats";
-      }
-      return {
-        success: true,
-        profileStats: {
-          interviewsTaken: 0,
-          interviewsCreated: 0,
-          memberSince: user.createdAt,
-          averageScore: 0,
-        },
-      };
-    }
+    const stats = profileStats[0];
+
     return {
       success: true,
-      profileStats: { ...profileStats[0], memberSince: user.createdAt },
+      profileStats: {
+        interviewsTaken: Number(stats?.interviews_taken) || 0,
+        interviewsCreated: Number(stats?.interviews_created) || 0,
+        averageScore: Number(stats?.average_score) || 0,
+        memberSince: user.createdAt,
+      },
     };
   } catch (err: unknown) {
     console.error(err);
-    return { success: false, message: err };
+    return {
+      success: false,
+      message: err instanceof Error ? err.message : String(err),
+    };
   }
 };
 
-export const updateDailyStatsAfterInterview = async (
-  userId: string,
-  interviewData: { score: number; questionCount: number }
-) => {
+export const getUserAnalytics = async (
+  duration: Duration = "week"
+): Promise<ReturnUserAnalytics | CatchReturn> => {
   try {
-    const today = new Date().toISOString().split("T")[0];
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Unauthorized user");
 
-    await db
-      .insert(dailyStats)
-      .values({
-        userId,
-        date: today,
-        interviewCount: 1,
-        totalScore: interviewData.score,
-        totalQuestions: interviewData.questionCount,
-        averageScore: interviewData.score.toString(),
-      })
-      .onConflictDoUpdate({
-        target: [dailyStats.userId, dailyStats.date],
-        set: {
-          interviewCount: sql`${dailyStats.interviewCount} + 1`,
-          totalScore: sql`${dailyStats.totalScore} + ${interviewData.score}`,
-          totalQuestions: sql`${dailyStats.totalQuestions} + ${interviewData.questionCount}`,
-          averageScore: sql`ROUND((${dailyStats.totalScore} + ${interviewData.score})::decimal / (${dailyStats.interviewCount} + 1), 2)`,
-          updatedAt: new Date(),
-        },
-      });
+    const now = new Date();
 
-    return { success: true };
-  } catch (error) {
-    console.error("Error updating daily stats:", error);
-    return { success: false, message: error };
+    const {
+      currentStart,
+      currentEnd,
+      previousStart,
+      previousEnd,
+      periodSelect,
+      groupBy,
+    } = getAnalyticsDateRangesAndGrouping(duration, now);
+
+    const nowIso = now.toISOString();
+    const currentStartIso = currentStart.toISOString();
+    const previousStartIso = previousStart.toISOString();
+    const previousEndIso = previousEnd.toISOString();
+
+    const result = await db.execute<
+      AnalyticsQueryRow & Record<string, unknown>
+    >(sql`
+      WITH all_periods AS (
+        SELECT
+          CASE
+            WHEN f.created_at >= ${currentStartIso}::timestamptz THEN 'current'
+            ELSE 'previous'
+          END as time_frame,
+          ${sql.raw(periodSelect)} as period,
+          ${sql.raw(groupBy)} as group_key,
+          COUNT(DISTINCT f.interview_id) as total_attended_interviews,
+          AVG(f.total_score) as average_score,
+          AVG(COALESCE(i.question_count, 10)) as average_questions
+        FROM feedback f
+        LEFT JOIN interviews i ON f.interview_id = i.id
+        WHERE f.user_id = ${user.id}
+          AND (
+            (f.created_at >= ${currentStartIso}::timestamptz AND f.created_at <= ${nowIso}::timestamptz)
+            OR
+            (f.created_at >= ${previousStartIso}::timestamptz AND f.created_at <= ${previousEndIso}::timestamptz)
+          )
+        GROUP BY time_frame, ${sql.raw(groupBy)}, ${sql.raw(periodSelect)}
+      )
+      SELECT
+        time_frame,
+        TRIM(period) as period,
+        COALESCE(total_attended_interviews, 0) as total_attended_interviews,
+        ROUND(COALESCE(average_score, 0), 2) as average_score,
+        ROUND(COALESCE(average_questions, 0), 2) as average_questions
+      FROM all_periods
+      ORDER BY time_frame, group_key
+    `);
+
+    const currentRows = result.filter((r) => r.time_frame === "current");
+    const previousRows = result.filter((r) => r.time_frame === "previous");
+
+    const currentPeriod = formatAnalytics(
+      currentRows,
+      duration,
+      currentStart,
+      currentEnd,
+      currentEnd
+    );
+    const previousPeriod = formatAnalytics(
+      previousRows,
+      duration,
+      previousStart,
+      previousEnd,
+      currentEnd
+    );
+
+    return {
+      success: true,
+      analytics: {
+        currentPeriod,
+        previousPeriod,
+      },
+    };
+  } catch (err: unknown) {
+    console.error("getUserAnalytics error:", err);
+    return {
+      success: false,
+      message: err instanceof Error ? err.message : String(err),
+    };
   }
 };
