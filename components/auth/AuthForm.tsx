@@ -1,14 +1,8 @@
 "use client";
 
-import { z } from "zod";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { signIn, signUp } from "@/lib/actions/auth.action";
 import Logo from "../shared/Logo";
-import { signinFormSchema, signupFormSchema } from "@/validators";
+
 import {
   Form,
   FormControl,
@@ -19,65 +13,17 @@ import {
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { Input } from "../ui/input";
+import useAuth from "@/hooks/useAuth";
+import Link from "next/link";
+import Spinner from "../ui/spinner";
 
-interface AuthFormProps {
+export interface AuthFormProps {
   type: FormType;
   isModal?: boolean;
 }
 
 const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
-  const router = useRouter();
-
-  const formSchema = type === "sign-in" ? signinFormSchema : signupFormSchema;
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
-  });
-
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    try {
-      if (type === "sign-up") {
-        const { name, email, password } = data;
-
-        const result = await signUp({
-          name: name!,
-          email,
-          password,
-        });
-
-        if (!result.success) return toast.error(result.message);
-
-        toast.success(
-          "Account created successfully. A confirmation mail is sent to your email."
-        );
-      } else {
-        const { email, password } = data;
-
-        const result = await signIn({
-          email,
-          password,
-        });
-
-        if (!result.success) return toast.error(result.message);
-
-        toast.success("Signed in successfully.");
-        if (isModal) {
-          router.back();
-        } else {
-          router.push("/");
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(`There was an error: ${error}`);
-    }
-  };
-
-  const isSignIn = type === "sign-in";
+  const { isSignIn, onSubmit, form } = useAuth({ type, isModal });
 
   return (
     <div
@@ -161,9 +107,7 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
               type="submit"
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting && (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              )}
+              {form.formState.isSubmitting && <Spinner />}
               {isSignIn
                 ? form.formState.isSubmitting
                   ? "Signing In..."
@@ -184,6 +128,22 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
             {!isSignIn ? "Sign In" : "Sign Up"}
           </a>
         </p>
+        {isSignIn ? (
+          isModal ? (
+            <a href="/forgot-password" className="font-semibold text-primary">
+              Forgot password?
+            </a>
+          ) : (
+            <Link
+              className="font-semibold text-primary"
+              href="/forgot-password"
+            >
+              Forgot password?
+            </Link>
+          )
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

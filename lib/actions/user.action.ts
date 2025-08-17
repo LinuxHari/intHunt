@@ -252,19 +252,19 @@ export const getProfileStats = async (): Promise<
 
     const profileStats = await db.execute(sql`
       WITH user_stats AS (
-        SELECT 
+        SELECT
           COUNT(DISTINCT f.interview_id) as interviews_taken,
           ROUND(COALESCE(AVG(f.total_score), 0), 2) as average_score
         FROM ${feedback} f
         WHERE f.user_id = ${user.id}
       ),
       created_stats AS (
-        SELECT 
+        SELECT
           COUNT(DISTINCT i.id) as interviews_created
         FROM ${interviews} i
-        WHERE i.user_id = ${user.id}
+        WHERE i.published_by = ${user.id}
       )
-      SELECT 
+      SELECT
         COALESCE(us.interviews_taken, 0) as interviews_taken,
         COALESCE(cs.interviews_created, 0) as interviews_created,
         COALESCE(us.average_score, 0) as average_score

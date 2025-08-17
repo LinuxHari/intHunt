@@ -123,6 +123,10 @@ export const questionFormSchema = z.object({
     .max(500, { message: "Description is too long" }),
 });
 
+export const resetPasswordSchema = z.object({
+  email: z.string().email({ message: "Please enter valid email" }),
+});
+
 export const signupFormSchema = getAuthFormSchema("sign-up");
 
 export const signinFormSchema = getAuthFormSchema("sign-in");
@@ -138,3 +142,5 @@ export type ScheduleFormType = z.infer<typeof scheduleFormSchema>;
 export type QuestionFormType = z.infer<typeof questionFormSchema>;
 
 export type FeedbackType = z.infer<typeof feedbackSchema>;
+
+export type ResetPasswordType = z.infer<typeof resetPasswordSchema>;

@@ -99,6 +99,28 @@ export const signOut = async () => {
   }
 };
 
+export const resetPassword = async (email: string) => {
+  try {
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${env.NEXT_PUBLIC_BASE_URL}/dashboard/profile`,
+    });
+
+    if (error) throw error;
+
+    return { success: true, message: "Password reset email is sent" };
+  } catch (error: unknown) {
+    console.error(error, "Error while resetting password", email);
+    if (error instanceof AuthApiError && error.code === "user_not_found")
+      return {
+        success: false,
+        message: "User does not exist",
+      };
+    return { success: false, message: "Failed to send reset password" };
+  }
+};
+
 export const deleteUser = async () => {
   try {
     const supabase = await createClient();
