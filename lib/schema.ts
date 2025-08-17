@@ -10,9 +10,8 @@ import {
   pgEnum,
   uuid,
   index,
-  uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 export const interviewTypeEnum = pgEnum("type", ["technical", "behavioral"]);
 export const interviewDifficultyEnum = pgEnum("difficulty", [
@@ -45,25 +44,35 @@ export const interviews = pgTable(
     isDeleted: boolean("is_deleted").notNull().default(false),
   },
   (table) => [
-    uniqueIndex("id_idx").on(table.id),
-    index("type_difficulty_role_idx").on(
-      table.type,
-      table.difficulty,
-      table.role
-    ),
+    index("role_idx").on(table.role),
+    index("type_idx").on(table.type),
+    index("difficulty_idx").on(table.difficulty),
+
+    sql`CREATE INDEX techstack_gin_idx ON ${table} USING GIN (${table.techstack})`,
+    sql`CREATE INDEX role_techstack_gin_idx ON ${table} (role) USING GIN (${table.techstack})`,
   ]
 );
 
-export const scheduledInterviews = pgTable("scheduledInterviews", {
-  id: uuid("id").defaultRandom().primaryKey().notNull(),
-  interviewId: uuid("interview_id")
-    .notNull()
-    .references(() => interviews.id),
-  userId: varchar("user_id", { length: 36 }).notNull(),
-  scheduledAt: timestamp("scheduled_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  timezone: varchar("timezone", { length: 128 }).notNull(),
-});
+export const scheduledInterviews = pgTable(
+  "scheduledInterviews",
+  {
+    id: uuid("id").defaultRandom().primaryKey().notNull(),
+    interviewId: uuid("interview_id")
+      .notNull()
+      .references(() => interviews.id),
+    userId: varchar("user_id", { length: 36 }).notNull(),
+    scheduledAt: timestamp("scheduled_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    timezone: varchar("timezone", { length: 128 }).notNull(),
+  },
+  (table) => [
+    index("user_interview_time_idx").on(
+      table.userId,
+      table.interviewId,
+      table.scheduledAt
+    ),
+  ]
+);
 
 export const feedback = pgTable("feedback", {
   id: uuid("id").defaultRandom().primaryKey().notNull(),
@@ -104,14 +113,3 @@ export const feedbackRelations = relations(feedback, ({ one }) => ({
     references: [interviews.id],
   }),
 }));
-
-// export type Interview = typeof interviews.$inferSelect;
-// export type NewInterview = typeof interviews.$inferInsert;
-// export type ScheduledInterview = typeof scheduledInterviews.$inferSelect;
-// export type NewScheduledInterview = typeof scheduledInterviews.$inferInsert;
-// export type Feedback = typeof feedback.$inferSelect;
-// export type NewFeedback = typeof feedback.$inferInsert;
-// export type UserStats = typeof userStats.$inferSelect;
-// export type NewUserStats = typeof userStats.$inferInsert;
-// export type DailyStats = typeof dailyStats.$inferSelect;
-// export type NewDailyStats = typeof dailyStats.$inferInsert;
