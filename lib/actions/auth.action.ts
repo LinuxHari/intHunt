@@ -27,11 +27,15 @@ export const signUp = async (params: SignUpParams) => {
   } catch (error: unknown) {
     console.error("Error creating user:", error);
 
-    if (error instanceof AuthApiError && error.code === "email_exists") {
-      return {
-        success: false,
-        message: "This email is already in use",
-      };
+    if (error instanceof AuthApiError) {
+      if (
+        error.code === "email_already_exists" ||
+        error.code === "user_already_exists"
+      )
+        return {
+          success: false,
+          message: "This email is already in use",
+        };
     }
 
     return {
@@ -68,7 +72,7 @@ export const signIn = async (params: SignInParams) => {
           success: false,
           message: "Invalid email or password",
         };
-      else if (error.code === "provider_email_needs_verification")
+      else if (error.code === "email_not_confirmed")
         return {
           success: false,
           message: "Email is not verified yet",

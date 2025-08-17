@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import useCreateInterview from "@/hooks/useCreateInterview";
 import GenerateQuestionsModal from "./GenerateQuestionsModal";
+import Spinner from "@/components/ui/spinner";
 
 const CreateInterviewForm = () => {
   const {
@@ -262,7 +263,7 @@ const CreateInterviewForm = () => {
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <Spinner />
                   Creating...
                 </div>
               ) : (

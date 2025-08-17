@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { Button } from "../ui/button";
+import Spinner from "../ui/spinner";
 
 interface LoadMoreProps {
   loading: boolean;
@@ -17,7 +18,7 @@ const LoadMore = ({ loading, onClick }: LoadMoreProps) => {
       >
         {loading ? (
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+            <Spinner />
             Loading...
           </div>
         ) : (

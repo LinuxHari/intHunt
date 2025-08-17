@@ -71,8 +71,10 @@ export const scheduleFormSchema = z
 const getAuthFormSchema = (type: FormType) => {
   return z.object({
     name: type === "sign-up" ? z.string().min(3) : z.string().optional(),
-    email: z.string().email(),
-    password: z.string().min(3),
+    email: z.string().email({ message: "Please enter email address" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
   });
 };
 

@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { searchAnalytics } from "@/lib/analytics";
+import Spinner from "../ui/spinner";
 
 const SearchHero = () => {
   const [query, setQuery] = useState("");
@@ -37,7 +38,7 @@ const SearchHero = () => {
       <Button type="submit" disabled={isSearching}>
         {isSearching ? (
           <>
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <Spinner />
             Searching...
           </>
         ) : (

@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import { questionFormSchema, QuestionFormType } from "@/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
@@ -68,7 +69,7 @@ const GenerateQuestionsForm = ({
           <Button type="submit" disabled={isSubmittingForm}>
             {isSubmittingForm ? (
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <Spinner />
                 Generating...
               </div>
             ) : (

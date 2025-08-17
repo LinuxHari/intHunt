@@ -5,13 +5,20 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { signIn, signUp } from "@/lib/actions/auth.action";
-import FormField from "./FormField";
 import Logo from "../shared/Logo";
 import { signinFormSchema, signupFormSchema } from "@/validators";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { cn } from "@/lib/utils";
+import { Input } from "../ui/input";
 
 interface AuthFormProps {
   type: FormType;
@@ -42,13 +49,11 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
           password,
         });
 
-        if (!result.success) {
-          toast.error(result.message);
-          return;
-        }
+        if (!result.success) return toast.error(result.message);
 
-        toast.success("Account created successfully. Please sign in.");
-        router.push("/sign-in");
+        toast.success(
+          "Account created successfully. A confirmation mail is sent to your email."
+        );
       } else {
         const { email, password } = data;
 
@@ -99,26 +104,56 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
               <FormField
                 control={form.control}
                 name="name"
-                label="Name"
-                placeholder="Your Name"
-                type="text"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name *</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="input"
+                        placeholder="Enter your name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             )}
 
             <FormField
               control={form.control}
               name="email"
-              label="Email"
-              placeholder="Your email address"
-              type="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email *</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="input"
+                      placeholder="Enter your email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             <FormField
               control={form.control}
               name="password"
-              label="Password"
-              placeholder="Enter your password"
-              type="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password *</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="input"
+                      placeholder="Enter your password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             <Button
@@ -126,6 +161,9 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
               type="submit"
               disabled={form.formState.isSubmitting}
             >
+              {form.formState.isSubmitting && (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              )}
               {isSignIn
                 ? form.formState.isSubmitting
                   ? "Signing In..."

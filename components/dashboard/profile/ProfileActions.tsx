@@ -8,6 +8,7 @@ import DeleteConfirmModal from "./DeleteConfirmModal";
 import { deleteUser } from "@/lib/actions/auth.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Spinner from "@/components/ui/spinner";
 
 const ProfileActions = () => {
   const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
@@ -40,11 +41,7 @@ const ProfileActions = () => {
           onClick={() => setIsShowDeleteModal(!isShowDeleteModal)}
           disabled={isDeleting}
         >
-          {isDeleting ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Trash className="h-4 w-4 mr-1" />
-          )}
+          {isDeleting ? <Spinner /> : <Trash className="h-4 w-4 mr-1" />}
           Delete Account
         </Button>
       </CardContent>

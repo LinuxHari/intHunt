@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import { updatePassword } from "@/lib/actions/user.action";
 import { PasswordFormType, passwordSchema } from "@/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -101,7 +102,7 @@ const UpdatePasswordForm = () => {
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <Spinner />
                   Updating...
                 </div>
               ) : (

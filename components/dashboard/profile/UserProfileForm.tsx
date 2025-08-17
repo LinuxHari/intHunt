@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { updateProfile } from "@/lib/actions/user.action";
 import { toast } from "sonner";
+import Spinner from "@/components/ui/spinner";
 
 interface UserProfileFormProps {
   user: User;
@@ -178,7 +179,7 @@ const UserProfileForm = ({ user }: UserProfileFormProps) => {
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <Spinner />
                   Updating...
                 </div>
               ) : (
