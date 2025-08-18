@@ -19,7 +19,7 @@ const PublishedInterviewCard = ({
   const formattedDate = dayjs(interview.createdAt).format("MMM D, YYYY");
 
   return (
-    <Card className="flex flex-col h-full hover:shadow-lg transition-all duration-200 overflow-hidden">
+    <Card className="flex flex-col h-full hover:shadow-lg transition-all duration-200 overflow-hidden hover:scale-105 cursor-default">
       <CardHeader className="flex flex-row items-start justify-between p-6 pb-4">
         <div className="flex-1">
           <h3 className="font-semibold text-lg capitalize text-slate-900 dark:text-white">

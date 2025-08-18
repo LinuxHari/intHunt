@@ -21,11 +21,11 @@ export const getTypeConfig = (
   > = {
     technical: {
       color:
-        "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800 p-1",
+        "bg-green-50 hover:bg-green-50 hover:dark:bg-green-950 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800 p-1",
     },
     behavioral: {
       color:
-        "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800 p-1",
+        "bg-blue-50 hover:bg-blue-50 dark:hover:bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800 p-1",
     },
     // Mixed: {
     //   color:
@@ -39,15 +39,15 @@ export const getLevelConfig = (level: string) => {
   const configs = {
     junior: {
       color:
-        "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-950 dark:text-gray-300 dark:border-gray-700",
+        "bg-gray-50 hover:bg-gray-50 hover:dark:bg-gray-950  text-gray-700 border-gray-200 dark:bg-gray-950 dark:text-gray-300 dark:border-gray-700",
     },
     mid: {
       color:
-        "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800",
+        "bg-yellow-50 hover:bg-yellow-50 hover:dark:bg-yellow-950  text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800",
     },
     senior: {
       color:
-        "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
+        "bg-red-50 hover:bg-red-50 hover:dark:bg-red-950 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
     },
   };
   return configs[level as keyof typeof configs];
@@ -57,15 +57,15 @@ export const getDifficultyConfig = (difficulty: Interview["difficulty"]) => {
   const configs = {
     easy: {
       color:
-        "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800",
+        "bg-blue-50 hover:bg-blue-50 hover:dark:bg-blue-950  text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800",
     },
     medium: {
       color:
-        "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-800",
+        "bg-purple-50 hover:bg-purple-50 hover:dark:bg-purple-950 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-800",
     },
     hard: {
       color:
-        "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
+        "bg-red-50 hover:bg-red-50 hover:dark:bg-red-950 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
     },
   };
   return configs[difficulty as keyof typeof configs];

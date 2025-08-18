@@ -19,7 +19,7 @@ const UpcomingInterviewCard = ({
   const timeUntil = getTimeUntil(interview.scheduledAt);
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-200">
+    <Card className="hover:shadow-lg transition-all duration-200 hover:scale-105 cursor-default">
       <CardContent className="p-6">
         <div className="space-y-4">
           <div className="flex items-start justify-between">

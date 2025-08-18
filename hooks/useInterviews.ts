@@ -85,14 +85,14 @@ const useInterviews = ({
   );
 
   const handleFiltersChange = useCallback((filters: Filters) => {
-    if (filters.query.length >= 2) {
-      const params = new URLSearchParams();
-      if (filters.query) params.set("search", filters.query);
-      if (filters.type && filters.type !== "all")
-        params.set("type", filters.type);
-      if (filters.sort) params.set("sortType", filters.sort);
-      history.pushState(null, "", `?${params.toString()}`);
+    const params = new URLSearchParams();
+    if (filters.query) params.set("search", filters.query);
+    if (filters.type && filters.type !== "all")
+      params.set("type", filters.type);
+    if (filters.sort) params.set("sortType", filters.sort);
+    history.pushState(null, "", `?${params.toString()}`);
 
+    if (filters.query.length >= 2) {
       startFilteringTransition(async () => {
         await getInterviews({ filters, page: 1, append: false });
         setPage(1);

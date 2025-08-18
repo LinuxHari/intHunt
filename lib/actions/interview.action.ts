@@ -59,7 +59,10 @@ export const getPublishedInterviews = async (
     const user = await getCurrentUser();
     if (!user) throw "User not found";
 
-    const whereCondition = eq(interviews.isDeleted, false);
+    const whereCondition = and(
+      eq(interviews.publishedBy, user.id),
+      eq(interviews.isDeleted, false)
+    );
 
     const [totalCountResult, publishedInterviewsResult] = await Promise.all([
       db.select({ count: count() }).from(interviews).where(whereCondition),

@@ -12,8 +12,9 @@ import {
 import { signOut } from "@/lib/actions/auth.action";
 import { LogOut, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useTransition } from "react";
 import { toast } from "sonner";
+import Spinner from "../ui/spinner";
 
 interface LogoutModalProps {
   open: boolean;
@@ -23,16 +24,19 @@ interface LogoutModalProps {
 const LogoutModal = ({ open, onOpenChange }: LogoutModalProps) => {
   const router = useRouter();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isPending, startTransition] = useTransition();
 
-  const handleLogout = async () => {
-    const { success } = await signOut();
-    if (!success) {
-      toast.error("Failed to log out. Please try again.");
-    } else {
-      onOpenChange(false);
-      toast.success("Logged out successfully");
-      timeoutRef.current = setTimeout(() => router.push("/sign-in"), 1000);
-    }
+  const handleLogout = () => {
+    startTransition(async () => {
+      const { success } = await signOut();
+      if (!success) {
+        toast.error("Failed to log out. Please try again.");
+      } else {
+        onOpenChange(false);
+        toast.success("Logged out successfully");
+        timeoutRef.current = setTimeout(() => router.push("/sign-in"), 1000);
+      }
+    });
   };
 
   useEffect(() => {
@@ -81,8 +85,16 @@ const LogoutModal = ({ open, onOpenChange }: LogoutModalProps) => {
             onClick={handleLogout}
             className="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white"
           >
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
+            {isPending ? (
+              <>
+                <Spinner /> Logging out...
+              </>
+            ) : (
+              <>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

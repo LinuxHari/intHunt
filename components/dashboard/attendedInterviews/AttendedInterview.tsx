@@ -16,7 +16,7 @@ const AttendedInterview = ({ interview }: AttendedInterviewProps) => {
   return (
     <Card
       key={interview.id}
-      className="hover:shadow-lg transition-all duration-200"
+      className="hover:shadow-lg transition-all duration-200 hover:scale-105 cursor-default"
     >
       <CardContent className="p-6">
         <div className="space-y-4">
