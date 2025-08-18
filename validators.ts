@@ -36,9 +36,18 @@ export const passwordSchema = z
     newPassword: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
+  .refine((data) => {
+    if (data.currentPassword === data.newPassword)
+      return {
+        message: "Current and new passwords are same",
+        path: ["newPassword"],
+      };
+
+    if (data.newPassword === data.confirmPassword)
+      return {
+        message: "Passwords don't match",
+        path: ["confirmPassword"],
+      };
   });
 
 export const scheduleFormSchema = z
@@ -123,9 +132,19 @@ export const questionFormSchema = z.object({
     .max(500, { message: "Description is too long" }),
 });
 
-export const resetPasswordSchema = z.object({
+export const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Please enter valid email" }),
 });
+
+export const resetPasswordSchema = z
+  .object({
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export const signupFormSchema = getAuthFormSchema("sign-up");
 
@@ -142,5 +161,7 @@ export type ScheduleFormType = z.infer<typeof scheduleFormSchema>;
 export type QuestionFormType = z.infer<typeof questionFormSchema>;
 
 export type FeedbackType = z.infer<typeof feedbackSchema>;
+
+export type ForgotPasswordType = z.infer<typeof forgotPasswordSchema>;
 
 export type ResetPasswordType = z.infer<typeof resetPasswordSchema>;

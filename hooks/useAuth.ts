@@ -1,14 +1,16 @@
 import { z } from "zod";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, signUp } from "@/lib/actions/auth.action";
 import { signinFormSchema, signupFormSchema } from "@/validators";
 import { AuthFormProps } from "@/components/auth/AuthForm";
+import { useEffect } from "react";
 
 const useAuth = ({ type, isModal }: AuthFormProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const formSchema = type === "sign-in" ? signinFormSchema : signupFormSchema;
   const form = useForm<z.infer<typeof formSchema>>({
@@ -60,6 +62,24 @@ const useAuth = ({ type, isModal }: AuthFormProps) => {
   };
 
   const isSignIn = type === "sign-in";
+
+  useEffect(() => {
+    let timeoutId = null;
+    if (isSignIn && searchParams.get("resetExpired") === "true") {
+      console.log("showing toast for reset expired");
+
+      timeoutId = setTimeout(() => {
+        toast.error("Password reset link has expired");
+      }, 1000);
+      // router.replace("/sign-in");
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, []);
 
   return {
     isSignIn,

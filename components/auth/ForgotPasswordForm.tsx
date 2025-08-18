@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -16,9 +16,10 @@ import {
   FormMessage,
 } from "../ui/form";
 import Spinner from "../ui/spinner";
-import { resetPassword } from "@/lib/actions/auth.action";
+import { sendResetLink } from "@/lib/actions/auth.action";
 import { toast } from "sonner";
-import { resetPasswordSchema, ResetPasswordType } from "@/validators";
+import { forgotPasswordSchema, ForgotPasswordType } from "@/validators";
+import { useRouter } from "next/navigation";
 
 interface ForgotPasswordFormProps {
   isModal?: boolean;
@@ -26,23 +27,25 @@ interface ForgotPasswordFormProps {
 
 const ForgotPasswordForm = ({ isModal = false }: ForgotPasswordFormProps) => {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const form = useForm<ResetPasswordType>({
-    resolver: zodResolver(resetPasswordSchema),
+  const form = useForm<ForgotPasswordType>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
     },
   });
 
-  const handleSubmit = (data: ResetPasswordType) => {
+  const handleSubmit = (data: ForgotPasswordType) => {
     startTransition(async () => {
       try {
-        const { success, message } = await resetPassword(data.email);
+        const { success, message } = await sendResetLink(data.email);
         if (!success) {
           toast.error(message);
           return;
         }
         toast.success("Reset mail is sent to your email");
+        router.back();
       } catch (error: unknown) {
         console.error(error);
         toast.error("Failed to reset password. Please try again.");
@@ -60,11 +63,14 @@ const ForgotPasswordForm = ({ isModal = false }: ForgotPasswordFormProps) => {
           isModal ? "bg-background md:px-5" : "card py-14 px-10"
         )}
       >
-        <Logo />
-        <h3 className="text-primary text-center">
-          Nail Your Interview with AI
-        </h3>
-
+        {!isModal && (
+          <>
+            <Logo />
+            <h3 className="text-primary text-center">
+              Nail Your Interview with AI
+            </h3>
+          </>
+        )}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}

@@ -130,12 +130,15 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
         </p>
         {isSignIn ? (
           isModal ? (
-            <a href="/forgot-password" className="font-semibold text-primary">
+            <a
+              href="/forgot-password"
+              className="font-semibold text-primary hover:underline decoration-1"
+            >
               Forgot password?
             </a>
           ) : (
             <Link
-              className="font-semibold text-primary"
+              className="font-semibold text-primary hover:underline decoration-1"
               href="/forgot-password"
             >
               Forgot password?

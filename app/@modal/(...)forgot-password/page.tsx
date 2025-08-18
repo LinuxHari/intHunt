@@ -10,7 +10,7 @@ const ForgotPassword = () => {
   return (
     <Dialog onOpenChange={router.back} open>
       <DialogContent className="!min-w-fit">
-        <DialogTitle className="hidden">Forgot Password</DialogTitle>
+        <DialogTitle>Reset Password</DialogTitle>
         <ForgotPasswordForm isModal />
       </DialogContent>
     </Dialog>

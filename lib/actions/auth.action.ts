@@ -99,12 +99,12 @@ export const signOut = async () => {
   }
 };
 
-export const resetPassword = async (email: string) => {
+export const sendResetLink = async (email: string) => {
   try {
     const supabase = await createClient();
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${env.NEXT_PUBLIC_BASE_URL}/dashboard/profile`,
+      redirectTo: `${env.NEXT_PUBLIC_BASE_URL}/reset-password`,
     });
 
     if (error) throw error;
@@ -118,6 +118,43 @@ export const resetPassword = async (email: string) => {
         message: "User does not exist",
       };
     return { success: false, message: "Failed to send reset password" };
+  }
+};
+
+export const resetPassword = async ({
+  code,
+  password,
+}: {
+  code: string;
+  password: string;
+}) => {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error) throw error;
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    return {
+      success: true,
+      message: "Password resetted successfully",
+    };
+  } catch (error: unknown) {
+    if (error instanceof AuthApiError) {
+      if (error.code === "same_password")
+        return {
+          success: false,
+          message: "New password should not be same as old password",
+        };
+    }
+    return { success: false, message: "Failed to reset password" };
   }
 };
 
