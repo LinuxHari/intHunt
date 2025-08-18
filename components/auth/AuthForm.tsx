@@ -93,6 +93,7 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
                   <FormControl>
                     <Input
                       className="input"
+                      type="password"
                       placeholder="Enter your password"
                       {...field}
                     />
