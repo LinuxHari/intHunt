@@ -95,12 +95,6 @@ export const getInterviewsDueToday = (
   ).length;
 };
 
-export const getScoreColor = (score: number) => {
-  if (score >= 80) return "text-green-600 dark:text-green-400";
-  if (score >= 60) return "text-yellow-600 dark:text-yellow-400";
-  return "text-red-600 dark:text-red-400";
-};
-
 export const generateCalendarDays = (currentMonth: Dayjs) => {
   const startOfMonth = currentMonth.startOf("month");
   const endOfMonth = currentMonth.endOf("month");
@@ -269,4 +263,24 @@ export const formatAnalytics = (
       averageQuestions: Number(r?.average_questions ?? 0),
     };
   });
+};
+
+export const getScoreColor = (score: number) => {
+  if (score >= 80) return "text-green-400";
+  if (score >= 60) return "text-yellow-400";
+  return "text-red-400";
+};
+
+export const getScoreLabel = (score: number) => {
+  if (score >= 90) return "Excellent";
+  if (score >= 80) return "Very Good";
+  if (score >= 70) return "Good";
+  if (score >= 60) return "Fair";
+  return "Needs Improvement";
+};
+
+export const getScoreBackground = (score: number) => {
+  if (score >= 80) return "!bg-green-400";
+  if (score >= 60) return "!bg-yellow-400";
+  return "bg-red-400";
 };

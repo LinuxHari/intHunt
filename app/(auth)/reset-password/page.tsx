@@ -1,6 +1,7 @@
 import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
 interface ResetProps {
   searchParams: Promise<{ code: string }>;
 }
