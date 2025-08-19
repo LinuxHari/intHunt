@@ -5,6 +5,7 @@ import { cn, getScoreColor } from "@/lib/utils";
 import dayjs from "dayjs";
 import { Calendar, Star } from "lucide-react";
 import InterviewBadges from "../publishedInterviews/InterviewBadges";
+import Link from "next/link";
 
 interface AttendedInterviewProps {
   interview: AttendedInterview;
@@ -48,15 +49,11 @@ const AttendedInterview = ({ interview }: AttendedInterviewProps) => {
             </div>
           </div>
 
-          <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-            {interview.feedback}
-          </p>
-
           <DisplayTechIcons techStack={interview.techStack} />
 
-          <Button variant="outline" className="w-full">
-            View Details
-          </Button>
+          <Link href={`/interview/${interview.id}/feedback`}>
+            <Button className="w-full">View Feedback</Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
