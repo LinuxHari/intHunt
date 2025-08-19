@@ -2,7 +2,13 @@
 import { clsx, type ClassValue } from "clsx";
 import dayjs, { Dayjs } from "dayjs";
 import { twMerge } from "tailwind-merge";
-import { AnalyticsData, AnalyticsQueryRow, Duration } from "./actions/type";
+import {
+  AnalyticsData,
+  AnalyticsQueryRow,
+  Duration,
+  ReturnUserAnalytics,
+} from "./actions/type";
+import { TrendingUp, Users, Clock } from "lucide-react";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -263,6 +269,75 @@ export const formatAnalytics = (
       averageQuestions: Number(r?.average_questions ?? 0),
     };
   });
+};
+
+export const getAnalytics = (analytics: ReturnUserAnalytics["analytics"]) => {
+  const sumReducer = (
+    arr: typeof analytics.currentPeriod,
+    key: keyof (typeof arr)[number]
+  ) => arr.reduce((total, item) => total + (Number(item[key]) || 0), 0);
+
+  const avgReducer = (
+    arr: typeof analytics.currentPeriod,
+    key: keyof (typeof arr)[number]
+  ) => {
+    if (!arr.length) return 0;
+    return sumReducer(arr, key) / arr.length;
+  };
+
+  const totalInterviewsCurr = sumReducer(
+    analytics.currentPeriod,
+    "totalAttendedInterviews"
+  );
+  const avgScoreCurr = avgReducer(analytics.currentPeriod, "averageScore");
+  const avgQuestionsCurr = avgReducer(
+    analytics.currentPeriod,
+    "averageQuestions"
+  );
+
+  const totalInterviewsPrev = sumReducer(
+    analytics.previousPeriod,
+    "totalAttendedInterviews"
+  );
+  const avgScorePrev = avgReducer(analytics.previousPeriod, "averageScore");
+  const avgQuestionsPrev = avgReducer(
+    analytics.previousPeriod,
+    "averageQuestions"
+  );
+
+  const calcChange = (curr: number, prev: number, isPercent = true) => {
+    if (prev === 0) return curr > 0 ? "+100%" : "0%";
+    const change = ((curr - prev) / prev) * 100;
+    return `${change >= 0 ? "+" : ""}${
+      isPercent ? change.toFixed(1) + "%" : change.toFixed(1)
+    }`;
+  };
+
+  const statsData = [
+    {
+      title: "Total Interviews",
+      value: totalInterviewsCurr,
+      icon: Users,
+      change: calcChange(totalInterviewsCurr, totalInterviewsPrev),
+      suffix: "",
+    },
+    {
+      title: "Average Score",
+      value: avgScoreCurr.toFixed(1),
+      icon: TrendingUp,
+      change: calcChange(avgScoreCurr, avgScorePrev),
+      suffix: "%",
+    },
+    {
+      title: "Avg Questions",
+      value: avgQuestionsCurr,
+      icon: Clock,
+      change: calcChange(avgQuestionsCurr, avgQuestionsPrev),
+      suffix: "",
+    },
+  ];
+
+  return statsData;
 };
 
 export const getScoreColor = (score: number) => {

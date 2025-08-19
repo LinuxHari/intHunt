@@ -16,7 +16,7 @@ const Hero = () => {
               <span className="text-primary text-nowrap">AI-Driven</span>{" "}
               Practice & Feedback
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-lg">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-lg">
               Get ready for your next interview with practice questions and
               instant tips
             </p>
