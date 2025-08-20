@@ -72,6 +72,7 @@ export const getPublishedInterviews = async (
           difficulty: interviews.difficulty,
           createdAt: interviews.createdAt,
           questions: interviews.questions,
+          questionCount: interviews.questionCount,
           description: interviews.description,
           techstack: interviews.techstack,
           attendees: interviews.attendees,
@@ -87,14 +88,9 @@ export const getPublishedInterviews = async (
         .offset((page - 1) * offset),
     ]);
 
-    const interviewsData = publishedInterviewsResult.map((interview) => ({
-      ...interview,
-      totalQuestions: interview.questions.length,
-    }));
-
     return {
       success: true,
-      publishedInterviews: interviewsData,
+      publishedInterviews: publishedInterviewsResult,
       totalCounts: totalCountResult[0].count,
     };
   } catch (error: unknown) {

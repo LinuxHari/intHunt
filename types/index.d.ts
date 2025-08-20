@@ -19,13 +19,13 @@ interface BaseInterview {
   type: "behavioral" | "technical";
   level: "junior" | "mid" | "senior";
   difficulty: "easy" | "medium" | "hard";
+  questionCount: number;
 }
 
 interface Interview extends BaseInterview {
   techstack: string[];
   description: string;
   questions: string[];
-  questionCount: number;
   rating: {
     average: number;
     count: number;
@@ -37,7 +37,6 @@ interface Interview extends BaseInterview {
 }
 
 interface UpcomingInterview extends BaseInterview {
-  questionCount: number;
   attendees: number;
   averageScore: number;
   createdAt: Date;
@@ -49,7 +48,6 @@ interface UpcomingInterview extends BaseInterview {
 interface PublishedInterview extends BaseInterview {
   difficulty: Interview["difficulty"];
   createdAt: Date;
-  totalQuestions: number;
   description: string;
   techstack: string[];
   attendees: number;

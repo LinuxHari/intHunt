@@ -126,84 +126,75 @@ export const getAnalyticsDateRangesAndGrouping = (
   duration: Duration,
   now: Date
 ) => {
-  const currentDate = dayjs(now);
+  const nowUTC = new Date(now.getTime());
+
+  let currentStart: Date,
+    currentEnd: Date,
+    previousStart: Date,
+    previousEnd: Date;
+  let periodSelect: string, groupBy: string;
 
   switch (duration) {
-    case "week": {
-      const startOfCurrentWeek = currentDate.startOf("week").add(1, "day");
-      const endOfCurrentWeek = currentDate;
+    case "week":
+      currentStart = new Date(nowUTC);
+      currentStart.setDate(nowUTC.getDate() - (nowUTC.getDay() || 7) + 1);
+      currentStart.setHours(0, 0, 0, 0);
+      currentEnd = new Date(nowUTC);
+      currentEnd.setHours(23, 59, 59, 999);
 
-      const startOfPreviousWeek = startOfCurrentWeek.subtract(1, "week");
-      const endOfPreviousWeek = startOfCurrentWeek.subtract(1, "day");
+      previousStart = new Date(currentStart);
+      previousStart.setDate(currentStart.getDate() - 7);
+      previousEnd = new Date(currentStart);
+      previousEnd.setDate(currentStart.getDate() - 1);
+      previousEnd.setHours(23, 59, 59, 999);
 
-      return {
-        currentStart: startOfCurrentWeek.toDate(),
-        currentEnd: endOfCurrentWeek.toDate(),
-        previousStart: startOfPreviousWeek.toDate(),
-        previousEnd: endOfPreviousWeek.toDate(),
-        groupBy: "DATE_PART('dow', f.created_at)",
-        periodSelect: `CASE 
-          WHEN DATE_PART('dow', f.created_at) = 0 THEN 'Sunday'
-          WHEN DATE_PART('dow', f.created_at) = 1 THEN 'Monday'
-          WHEN DATE_PART('dow', f.created_at) = 2 THEN 'Tuesday'
-          WHEN DATE_PART('dow', f.created_at) = 3 THEN 'Wednesday'
-          WHEN DATE_PART('dow', f.created_at) = 4 THEN 'Thursday'
-          WHEN DATE_PART('dow', f.created_at) = 5 THEN 'Friday'
-          WHEN DATE_PART('dow', f.created_at) = 6 THEN 'Saturday'
-        END`,
-      };
-    }
+      periodSelect = "TO_CHAR(f.created_at, 'Dy')";
+      groupBy = "TO_CHAR(f.created_at, 'Dy')";
+      break;
 
-    case "month": {
-      const startOfCurrentMonth = currentDate.startOf("month");
-      const endOfCurrentMonth = currentDate;
+    case "month":
+      currentStart = new Date(nowUTC.getFullYear(), nowUTC.getMonth(), 1);
+      currentEnd = new Date(nowUTC);
+      currentEnd.setHours(23, 59, 59, 999);
 
-      const startOfPreviousMonth = startOfCurrentMonth.subtract(1, "month");
-      const endOfPreviousMonth = startOfCurrentMonth.subtract(1, "day");
+      previousStart = new Date(currentStart);
+      previousStart.setMonth(currentStart.getMonth() - 1);
+      previousEnd = new Date(currentStart);
+      previousEnd.setDate(currentStart.getDate() - 1);
+      previousEnd.setHours(23, 59, 59, 999);
 
-      return {
-        currentStart: startOfCurrentMonth.toDate(),
-        currentEnd: endOfCurrentMonth.toDate(),
-        previousStart: startOfPreviousMonth.toDate(),
-        previousEnd: endOfPreviousMonth.toDate(),
-        groupBy: "CEIL(DATE_PART('day', f.created_at) / 7.0)",
-        periodSelect: `CONCAT('Week ', CEIL(DATE_PART('day', f.created_at) / 7.0))`,
-      };
-    }
+      periodSelect =
+        "CONCAT('Week ', CEIL(EXTRACT(DAY FROM f.created_at) / 7.0))";
+      groupBy = "CEIL(EXTRACT(DAY FROM f.created_at) / 7.0)";
+      break;
 
-    case "year": {
-      const startOfCurrentYear = currentDate.startOf("year");
-      const endOfCurrentYear = currentDate;
+    case "year":
+      currentStart = new Date(nowUTC.getFullYear(), 0, 1);
+      currentEnd = new Date(nowUTC);
+      currentEnd.setHours(23, 59, 59, 999);
 
-      const startOfPreviousYear = startOfCurrentYear.subtract(1, "year");
-      const endOfPreviousYear = startOfCurrentYear.subtract(1, "day");
+      previousStart = new Date(currentStart);
+      previousStart.setFullYear(currentStart.getFullYear() - 1);
+      previousEnd = new Date(currentStart);
+      previousEnd.setDate(currentStart.getDate() - 1);
+      previousEnd.setHours(23, 59, 59, 999);
 
-      return {
-        currentStart: startOfCurrentYear.toDate(),
-        currentEnd: endOfCurrentYear.toDate(),
-        previousStart: startOfPreviousYear.toDate(),
-        previousEnd: endOfPreviousYear.toDate(),
-        groupBy: "DATE_PART('month', f.created_at)",
-        periodSelect: `CASE 
-          WHEN DATE_PART('month', f.created_at) = 1 THEN 'January'
-          WHEN DATE_PART('month', f.created_at) = 2 THEN 'February'
-          WHEN DATE_PART('month', f.created_at) = 3 THEN 'March'
-          WHEN DATE_PART('month', f.created_at) = 4 THEN 'April'
-          WHEN DATE_PART('month', f.created_at) = 5 THEN 'May'
-          WHEN DATE_PART('month', f.created_at) = 6 THEN 'June'
-          WHEN DATE_PART('month', f.created_at) = 7 THEN 'July'
-          WHEN DATE_PART('month', f.created_at) = 8 THEN 'August'
-          WHEN DATE_PART('month', f.created_at) = 9 THEN 'September'
-          WHEN DATE_PART('month', f.created_at) = 10 THEN 'October'
-          WHEN DATE_PART('month', f.created_at) = 11 THEN 'November'
-          WHEN DATE_PART('month', f.created_at) = 12 THEN 'December'
-        END`,
-      };
-    }
+      periodSelect = "TO_CHAR(f.created_at, 'Mon')";
+      groupBy = "TO_CHAR(f.created_at, 'Mon')";
+      break;
 
     default:
-      throw `Unsupported duration: ${duration}`;
+      throw new Error("Invalid duration");
   }
+
+  return {
+    currentStart,
+    currentEnd,
+    previousStart,
+    previousEnd,
+    periodSelect,
+    groupBy,
+  };
 };
 
 const buildExpectedPeriods = (
@@ -212,48 +203,75 @@ const buildExpectedPeriods = (
   end: Date,
   currentEnd: Date
 ): string[] => {
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+  const endDate = new Date(Math.min(end.getTime(), currentEnd.getTime()));
 
   if (duration === "week") {
-    const startIdx = start.getDay();
-    return Array.from(
-      { length: currentEnd.getDay() },
-      (_, i) => dayNames[(startIdx + i) % 7]
-    );
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const startDate = new Date(start);
+    const startDay = startDate.getDay() || 7;
+    const periods: string[] = [];
+    const daysInPeriod =
+      Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      ) + 1;
+
+    for (let i = 0; i < Math.min(daysInPeriod, 7); i++) {
+      const dayIndex = (startDay - 1 + i) % 7;
+      periods.push(days[dayIndex]);
+    }
+    return periods;
+  } else if (duration === "month") {
+    const startDate = new Date(start);
+    const periods: string[] = [];
+    const daysInMonth =
+      Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      ) + 1;
+    const maxWeeks = Math.ceil(daysInMonth / 7);
+
+    for (let i = 1; i <= maxWeeks; i++) {
+      periods.push(`Week ${i}`);
+    }
+    return periods;
+  } else if (duration === "year") {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const startDate = new Date(start);
+    const periods: string[] = [];
+    const startMonth = startDate.getMonth();
+    const endMonth =
+      endDate.getMonth() +
+      (endDate.getFullYear() - startDate.getFullYear()) * 12;
+
+    for (let i = startMonth; i <= endMonth; i++) {
+      periods.push(months[i % 12]);
+    }
+    return periods;
   }
 
-  if (duration === "month") {
-    const endDay = end.getDate();
-    const weeks = Math.ceil(endDay / 7);
-    return Array.from({ length: weeks }, (_, i) => `Week ${i + 1}`);
-  }
-
-  const endMonthIdx = end.getMonth();
-  return monthNames.slice(0, endMonthIdx + 1);
+  return [];
 };
 
 export const formatAnalytics = (
   rows: AnalyticsQueryRow[],
-  dur: Duration,
+  duration: Duration,
   start: Date,
   end: Date,
   currentEnd: Date
 ): AnalyticsData[] => {
-  const expected = buildExpectedPeriods(dur, start, end, currentEnd);
+  const expected = buildExpectedPeriods(duration, start, end, currentEnd);
 
   const map = new Map<string, AnalyticsQueryRow>();
   for (const r of rows) {
@@ -281,8 +299,9 @@ export const getAnalytics = (analytics: ReturnUserAnalytics["analytics"]) => {
     arr: typeof analytics.currentPeriod,
     key: keyof (typeof arr)[number]
   ) => {
-    if (!arr.length) return 0;
-    return sumReducer(arr, key) / arr.length;
+    const validItems = arr.filter((item) => item.totalAttendedInterviews > 0);
+    if (!validItems.length) return 0;
+    return sumReducer(validItems, key) / validItems.length;
   };
 
   const totalInterviewsCurr = sumReducer(
@@ -313,7 +332,7 @@ export const getAnalytics = (analytics: ReturnUserAnalytics["analytics"]) => {
     }`;
   };
 
-  const statsData = [
+  return [
     {
       title: "Total Interviews",
       value: totalInterviewsCurr,
@@ -330,14 +349,12 @@ export const getAnalytics = (analytics: ReturnUserAnalytics["analytics"]) => {
     },
     {
       title: "Avg Questions",
-      value: avgQuestionsCurr,
+      value: avgQuestionsCurr.toFixed(1),
       icon: Clock,
       change: calcChange(avgQuestionsCurr, avgQuestionsPrev),
       suffix: "",
     },
   ];
-
-  return statsData;
 };
 
 export const getScoreColor = (score: number) => {

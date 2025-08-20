@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn, getScoreColor } from "@/lib/utils";
 import dayjs from "dayjs";
-import { Calendar, Star } from "lucide-react";
+import { Calendar, FileQuestion, Star } from "lucide-react";
 import InterviewBadges from "../publishedInterviews/InterviewBadges";
 import Link from "next/link";
 
@@ -38,6 +38,10 @@ const AttendedInterview = ({ interview }: AttendedInterviewProps) => {
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
               <span>{formattedDate}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <FileQuestion className="h-4 w-4" />
+              <span>{interview.questionCount} questions</span>
             </div>
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 text-yellow-500" />

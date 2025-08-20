@@ -300,7 +300,6 @@ export const getUserAnalytics = async (
     if (!user) throw new Error("Unauthorized user");
 
     const now = new Date();
-
     const {
       currentStart,
       currentEnd,

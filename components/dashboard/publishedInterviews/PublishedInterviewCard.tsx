@@ -43,7 +43,7 @@ const PublishedInterviewCard = ({
 
       <CardContent className="flex-grow p-6 pt-0 space-y-6">
         <InterviewStats
-          questionsCount={interview.totalQuestions}
+          questionsCount={interview.questionCount}
           takersCount={interview.attendees}
           avgScore={interview.averageScore}
           createdDate={formattedDate}

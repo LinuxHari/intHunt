@@ -61,7 +61,7 @@ const AttendedInterviewsStats = ({ attendedStats }: AttendedStatsProps) => {
                 {stats.attendedStats.averageQuestions}
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-400">
-                Avg Questions
+                Average Questions
               </div>
             </div>
           </div>

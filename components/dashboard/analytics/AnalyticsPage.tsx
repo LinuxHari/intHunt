@@ -52,7 +52,6 @@ const AnalyticsPage = ({ analytics, recents }: AnalyticsPageProps) => {
     };
 
     if (renderRef.current) {
-      console.log("Fetching analytics for:", timeFilter);
       getAnalytics();
     } else {
       renderRef.current = true;

@@ -85,8 +85,6 @@ const useInterviewAgent = ({
     }
 
     const handleInterviewCompletion = async (messages: SavedMessage[]) => {
-      console.log("handleGenerateFeedback");
-
       const { success, feedbackId: id } = await manageInterviewCompletion({
         interviewId: interview.id,
         userId: user.id,
@@ -115,7 +113,7 @@ const useInterviewAgent = ({
     setCallStatus(CallStatus.CONNECTING);
 
     if (type === "generate") {
-      await vapi.start(env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
+      await vapi.start(env.NEXT_PUBLIC_VAPI_WORKFLOW_ID, {
         variableValues: {
           username: user.name,
           userid: user.id,
