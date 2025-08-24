@@ -5,17 +5,6 @@ import { getCurrentUser } from "./auth.action";
 
 import { eq, and, sql, desc, gt, count, avg } from "drizzle-orm";
 
-import {
-  CatchReturn,
-  ReturnAttended,
-  ReturnProfile,
-  ReturnPublished,
-  ReturnUpcoming,
-  ReturnUserAnalytics,
-  ReturnUserRecents,
-  Duration,
-  AnalyticsQueryRow,
-} from "./type";
 import { db } from "@/drizzle";
 import { feedback, interviews, scheduledInterviews } from "../schema";
 import { createClient } from "@/supabase/admin";

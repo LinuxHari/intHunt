@@ -1,11 +1,6 @@
 import InterviewsList from "@/components/dashboard/publishedInterviews/PublishedInterviewsList";
 import InterviewsHeader from "@/components/dashboard/publishedInterviews/PublishedInterviewsHeader";
 import InterviewsStats from "@/components/dashboard/publishedInterviews/PublishedInterviewCardStats";
-import {
-  CatchReturn,
-  ReturnPublished,
-  ReturnPublishedInterviews,
-} from "@/lib/actions/type";
 import { Suspense } from "react";
 import { InterviewCardsLoading, StatsCardLoading } from "../Loader";
 

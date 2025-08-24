@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ReturnProfile } from "@/lib/actions/type";
 import dayjs from "dayjs";
 
 interface ProfileStatsProps {

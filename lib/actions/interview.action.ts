@@ -2,15 +2,6 @@
 
 import { CreateInterviewFormType } from "@/validators";
 import { getCurrentUser } from "./auth.action";
-import {
-  CatchReturn,
-  InterviewSearchParams,
-  ReturnAttendedInterviews,
-  ReturnInterviewSearch,
-  ReturnPublishedInterviews,
-  ReturnUpcomingInterviews,
-  ScheduleDetails,
-} from "./type";
 import { runBigQueryQuery } from "../bigQuery";
 import { getRecommendationsQuery } from "@/constants/queries";
 import { generateText } from "ai";

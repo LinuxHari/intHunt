@@ -1,6 +1,5 @@
 import { use } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { CatchReturn, ReturnAttended } from "@/lib/actions/type";
 import { Calendar, Star, Clock } from "lucide-react";
 
 interface AttendedStatsProps {

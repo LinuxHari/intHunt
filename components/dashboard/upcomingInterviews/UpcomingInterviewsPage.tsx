@@ -1,8 +1,3 @@
-import {
-  CatchReturn,
-  ReturnUpcoming,
-  ReturnUpcomingInterviews,
-} from "@/lib/actions/type";
 import UpcomingInterviewsList from "./UpcomingInterviewsList";
 import UpcomingInterviewsStats from "./UpcomingInterviewsStats";
 import { Suspense } from "react";

@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CatchReturn, ReturnUserRecents } from "@/lib/actions/type";
 import { Users } from "lucide-react";
 import { use } from "react";
 import dayjs from "dayjs";

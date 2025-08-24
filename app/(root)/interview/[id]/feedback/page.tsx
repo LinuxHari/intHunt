@@ -1,9 +1,6 @@
 import { redirect } from "next/navigation";
 
-import {
-  getFeedbackByInterviewId,
-  getInterviewById,
-} from "@/lib/actions/general.action";
+import { getFeedbackByInterviewId } from "@/lib/actions/general.action";
 import { getCurrentUser } from "@/lib/actions/auth.action";
 import FeedbackPage from "@/components/feedback/FeedbackPage";
 
@@ -19,14 +16,14 @@ export default async function Feedback({ params }: RouteParams) {
     redirect("/login");
   }
 
-  const [interview, feedback] = await Promise.all([
-    getInterviewById(id),
-    getFeedbackByInterviewId({ interviewId: id, userId: user.id }),
-  ]);
+  const feedback = await getFeedbackByInterviewId({
+    interviewId: id,
+    userId: user.id,
+  });
 
-  if (!interview || !feedback) {
+  if (!feedback) {
     redirect(`/interview/${id}`);
   }
 
-  return <FeedbackPage interview={interview} feedback={feedback} />;
+  return <FeedbackPage feedback={feedback} />;
 }

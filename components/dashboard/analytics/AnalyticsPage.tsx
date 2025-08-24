@@ -4,12 +4,6 @@ import ChartSection from "@/components/dashboard/analytics/ChartSection";
 import RecentPerformance from "@/components/dashboard/analytics/RecentPerformance";
 import StatsCards from "@/components/dashboard/analytics/StatsCards";
 import TimeFilter from "@/components/dashboard/analytics/TimeFilter";
-import {
-  CatchReturn,
-  Duration,
-  ReturnUserAnalytics,
-  ReturnUserRecents,
-} from "@/lib/actions/type";
 import { use, useEffect, useRef, useState, useTransition } from "react";
 import { getUserAnalytics } from "@/lib/actions/user.action";
 import { AnalyticsLoader } from "./Loader";

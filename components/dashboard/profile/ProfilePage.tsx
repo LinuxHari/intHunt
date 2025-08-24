@@ -1,7 +1,6 @@
 import UserProfileForm from "@/components/dashboard/profile/UserProfileForm";
 import UpdatePasswordForm from "@/components/dashboard/profile/UpdatePasswordForm";
 import ProfileStats from "@/components/dashboard/profile/ProfileStats";
-import { ReturnProfile } from "@/lib/actions/type";
 import ProfileActions from "./ProfileActions";
 
 interface ProfilePageProps {

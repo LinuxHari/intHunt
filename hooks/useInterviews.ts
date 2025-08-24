@@ -2,10 +2,6 @@ import { useState, useTransition, useCallback } from "react";
 import { toast } from "sonner";
 import { getInterviewsWithQuery } from "@/lib/actions/interview.action";
 import { InterviewsPageParams } from "@/app/(root)/interviews/page";
-import {
-  InterviewSearchParams,
-  ReturnInterviewSearch,
-} from "@/lib/actions/type";
 import { clickAnalytics, scheduleAnalytics } from "@/lib/analytics";
 
 export interface InterviewsPageProps {

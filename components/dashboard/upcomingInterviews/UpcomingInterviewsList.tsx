@@ -4,7 +4,6 @@ import AllCaughtup from "@/components/shared/AllCaughtup";
 import LoadMore from "@/components/shared/LoadMore";
 import React, { use, useState, useTransition } from "react";
 import UpcomingInterviewCard from "./UpcomingInterviewCard";
-import { CatchReturn, ReturnUpcomingInterviews } from "@/lib/actions/type";
 import { toast } from "sonner";
 import { getUpcomingInterviews } from "@/lib/actions/interview.action";
 import { PER_PAGE } from "@/constants";

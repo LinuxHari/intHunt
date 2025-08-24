@@ -1,10 +1,5 @@
 import AttendedStats from "@/components/dashboard/attendedInterviews/AttendedInterviewsStats";
 import AttendedInterviewsList from "@/components/dashboard/attendedInterviews/AttendedInterviewsList";
-import {
-  CatchReturn,
-  ReturnAttended,
-  ReturnAttendedInterviews,
-} from "@/lib/actions/type";
 import { Suspense } from "react";
 import { InterviewCardsLoading, StatsCardLoading } from "../Loader";
 

@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ReturnUserAnalytics } from "@/lib/actions/type";
 import { getAnalytics } from "@/lib/utils";
 
 interface StatsCardsProps {

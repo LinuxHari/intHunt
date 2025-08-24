@@ -4,7 +4,7 @@ import { google } from "@ai-sdk/google";
 import { feedbackSchema } from "@/validators";
 import { db } from "@/drizzle";
 import { interviews, feedback } from "../schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, getTableColumns } from "drizzle-orm";
 
 export const manageInterviewCompletion = async (
   params: InterviewCompletionParams
@@ -115,9 +115,15 @@ export const getFeedbackByInterviewId = async (
   try {
     const { interviewId, userId } = params;
 
+    const feedbackColums = getTableColumns(feedback);
     const feedbackResult = await db
-      .select()
+      .select({
+        role: interviews.role,
+        type: interviews.type,
+        ...feedbackColums,
+      })
       .from(feedback)
+      .innerJoin(interviews, eq(feedback.interviewId, interviews.id))
       .where(
         and(eq(feedback.interviewId, interviewId), eq(feedback.userId, userId))
       )

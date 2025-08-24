@@ -1,7 +1,6 @@
 "use client";
 
 import { use, useState, useTransition } from "react";
-import { CatchReturn, ReturnPublishedInterviews } from "@/lib/actions/type";
 import InterviewCard from "./PublishedInterviewCard";
 import AllCaughtup from "@/components/shared/AllCaughtup";
 import LoadMore from "@/components/shared/LoadMore";

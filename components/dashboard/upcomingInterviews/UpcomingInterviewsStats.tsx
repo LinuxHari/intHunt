@@ -1,6 +1,5 @@
 import React, { use } from "react";
 import StatCard from "./StatCard";
-import { CatchReturn, ReturnUpcoming } from "@/lib/actions/type";
 import { Calendar, Play } from "lucide-react";
 
 interface UpcomingInterviewsStatsProps {

@@ -64,6 +64,7 @@ export const scheduledInterviews = pgTable(
     scheduledAt: timestamp("scheduled_at").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     timezone: varchar("timezone", { length: 128 }).notNull(),
+    reminderSent: boolean("reminder_sent").notNull().default(false),
   },
   (table) => [
     index("user_interview_time_idx").on(

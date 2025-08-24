@@ -1,7 +1,6 @@
 import { use } from "react";
 import { Calendar, Eye, Edit } from "lucide-react";
 import StatCard from "./StatsCard";
-import { CatchReturn, ReturnPublished } from "@/lib/actions/type";
 
 interface InterviewsStatsProps {
   publishedStats: Promise<ReturnPublished | CatchReturn>;

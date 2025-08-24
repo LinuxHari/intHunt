@@ -4,7 +4,6 @@ import { use, useState, useTransition } from "react";
 import LoadMore from "@/components/shared/LoadMore";
 import AttendedInterview from "./AttendedInterview";
 import AllCaughtup from "@/components/shared/AllCaughtup";
-import { CatchReturn, ReturnAttendedInterviews } from "@/lib/actions/type";
 import { getAttendedInterviews } from "@/lib/actions/interview.action";
 import { PER_PAGE } from "@/constants";
 import { toast } from "sonner";

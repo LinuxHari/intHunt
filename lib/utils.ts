@@ -2,12 +2,6 @@
 import { clsx, type ClassValue } from "clsx";
 import dayjs, { Dayjs } from "dayjs";
 import { twMerge } from "tailwind-merge";
-import {
-  AnalyticsData,
-  AnalyticsQueryRow,
-  Duration,
-  ReturnUserAnalytics,
-} from "./actions/type";
 import { TrendingUp, Users, Clock } from "lucide-react";
 
 export const cn = (...inputs: ClassValue[]) => {

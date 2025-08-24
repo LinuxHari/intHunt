@@ -1,7 +1,6 @@
 import InterviewsPage from "@/components/interviews/InterviewsPage";
 import { getCurrentUser } from "@/lib/actions/auth.action";
 import { getInterviewsWithQuery } from "@/lib/actions/interview.action";
-import { InterviewSearchParams } from "@/lib/actions/type";
 
 export interface InterviewsPageParams {
   search: string;
