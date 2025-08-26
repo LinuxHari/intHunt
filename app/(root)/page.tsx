@@ -1,3 +1,5 @@
+import Banner from "@/components/home/Banner";
+import Features from "@/components/home/Features";
 import Hero from "@/components/home/Hero";
 import Recommendations from "@/components/home/Recommendations";
 import { getInterviewRecommendations } from "@/lib/actions/interview.action";
@@ -15,6 +17,8 @@ const Home = async () => {
       <main className="container mx-auto lg:px-4 py-8">
         <Hero />
         <Recommendations recommendations={recommendedInterviews} />
+        <Features />
+        <Banner />
       </main>
     </div>
   );

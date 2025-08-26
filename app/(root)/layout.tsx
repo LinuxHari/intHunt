@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 
 // import { isAuthenticated } from "@/lib/actions/auth.action";
 import Navigation from "@/components/layouts/Navigation";
+import Footer from "@/components/layouts/Footer";
 
 const Layout = async ({
   children,
@@ -17,6 +18,7 @@ const Layout = async ({
     <div className="root-layout">
       <Navigation />
       {children}
+      <Footer />
     </div>
   );
 };

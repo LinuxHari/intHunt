@@ -1,5 +1,15 @@
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
-import { BarChart3, Calendar, Clock, FileText, Plus, User } from "lucide-react";
+import {
+  BarChart3,
+  Brain,
+  Calendar,
+  CheckCircle,
+  ClipboardList,
+  Clock,
+  FileText,
+  Plus,
+  User,
+} from "lucide-react";
 
 export const interviewer: CreateAssistantDTO = {
   name: "Interviewer",
@@ -134,4 +144,25 @@ export const TIME_SLOTS = [
   "19:30",
   "20:00",
   "20:30",
+];
+
+export const features = [
+  {
+    icon: Brain,
+    title: "AI-Powered Interviews",
+    description:
+      "Experience realistic interview simulations powered by cutting-edge AI technology.",
+  },
+  {
+    icon: ClipboardList,
+    title: "Predefined Interview Sets",
+    description:
+      "Choose from a curated list of interviews designed for different roles and industries.",
+  },
+  {
+    icon: CheckCircle,
+    title: "Instant Feedback",
+    description:
+      "Receive actionable feedback immediately to improve your skills and confidence.",
+  },
 ];
