@@ -14,11 +14,11 @@ const bigquery = new BigQuery({
 const runBigQueryQuery = async (query: string) => {
   try {
     const [job] = await bigquery.createQueryJob({ query: query });
-    console.log(`BigQuery Job ${job.id} started.`);
+    // console.log(`BigQuery Job ${job.id} started.`);
 
     const [rows] = await job.getQueryResults();
 
-    console.log(`BigQuery Job ${job.id} completed.`);
+    // console.log(`BigQuery Job ${job.id} completed.`);
     return rows;
   } catch (error) {
     console.error("ERROR running BigQuery query:", error);

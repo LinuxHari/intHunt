@@ -4,13 +4,20 @@ import InterviewCard from "@/components/interview/schedule/ScheduleInterviewDeta
 import DatePicker from "@/components/interview/schedule/ScheduleDatePicker";
 import TimeSelector from "@/components/interview/schedule/ScheduleTImeSelector";
 import FormActions from "@/components/interview/schedule/ScheduleFormActions";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ScheduleFormProps {
   onOpenChange: (open: boolean) => void;
   interview: Interview;
+  isAuthenticated: boolean;
 }
 
-const ScheduleForm = ({ onOpenChange, interview }: ScheduleFormProps) => {
+const ScheduleForm = ({
+  onOpenChange,
+  interview,
+  isAuthenticated,
+}: ScheduleFormProps) => {
   const {
     form,
     isScheduling,
@@ -38,7 +45,13 @@ const ScheduleForm = ({ onOpenChange, interview }: ScheduleFormProps) => {
           <TimeSelector form={form} watchedTimeType={watchedTimeType} />
         </div>
 
-        <FormActions onCancel={handleClose} isScheduling={isScheduling} />
+        {isAuthenticated ? (
+          <FormActions onCancel={handleClose} isScheduling={isScheduling} />
+        ) : (
+          <Link href="/sign-in">
+            <Button className="w-full">Log In</Button>
+          </Link>
+        )}
       </form>
     </Form>
   );

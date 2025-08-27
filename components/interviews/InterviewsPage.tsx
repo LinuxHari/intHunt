@@ -71,6 +71,7 @@ const InterviewsPage = ({
           open={scheduleModalOpen}
           onOpenChange={setScheduleModalOpen}
           interview={selectedInterview}
+          isAuthenticated={Boolean(userId)}
         />
       )}
     </div>

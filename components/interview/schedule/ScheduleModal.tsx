@@ -13,12 +13,14 @@ interface ScheduleModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   interview: Interview;
+  isAuthenticated: boolean;
 }
 
 const ScheduleModal = ({
   open,
   onOpenChange,
   interview,
+  isAuthenticated,
 }: ScheduleModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -33,7 +35,11 @@ const ScheduleModal = ({
             interview.
           </DialogDescription>
         </DialogHeader>
-        <ScheduleForm onOpenChange={onOpenChange} interview={interview} />
+        <ScheduleForm
+          onOpenChange={onOpenChange}
+          interview={interview}
+          isAuthenticated={isAuthenticated}
+        />
       </DialogContent>
     </Dialog>
   );

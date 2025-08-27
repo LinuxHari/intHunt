@@ -61,6 +61,7 @@ const RecommendedInterviews = ({
           open={scheduleModalOpen}
           onOpenChange={setScheduleModalOpen}
           interview={selectedInterview}
+          isAuthenticated={Boolean(user)}
         />
       )}
     </>
