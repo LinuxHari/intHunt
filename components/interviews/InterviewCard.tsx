@@ -45,6 +45,14 @@ const InterviewCard = ({
           <DisplayTechIcons techStack={interview.techstack} />
 
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => onSchedule(interview)}
+            >
+              <CalendarDays className="h-4 w-4 mr-2" />
+              Schedule
+            </Button>
             <Link
               href={`/interview/${interview.id}`}
               onClick={() => onSelect(interview)}
@@ -55,14 +63,6 @@ const InterviewCard = ({
                 Attend Now
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => onSchedule(interview)}
-            >
-              <CalendarDays className="h-4 w-4 mr-2" />
-              Schedule
-            </Button>
           </div>
         </div>
       </CardContent>

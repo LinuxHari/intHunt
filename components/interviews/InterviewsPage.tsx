@@ -34,7 +34,7 @@ const InterviewsPage = ({
   } = useInterviews({ searchParams, interviews, userId });
 
   return (
-    <div className="space-y-8 my-5">
+    <main className="space-y-8">
       <InterviewsHeader />
 
       <InterviewsFilters
@@ -74,7 +74,7 @@ const InterviewsPage = ({
           isAuthenticated={Boolean(userId)}
         />
       )}
-    </div>
+    </main>
   );
 };
 

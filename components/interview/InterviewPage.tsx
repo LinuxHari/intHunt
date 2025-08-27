@@ -18,7 +18,7 @@ interface InterviewPageProps {
 const InterviewPage = ({ interview, feedback, user }: InterviewPageProps) => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <div className="container lg:px-4 py-8 w-full">
+      <div className="container lg:px-4 w-full">
         <div className="space-y-8">
           <Card>
             <CardContent className="p-6">

@@ -6,8 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import InterviewCard from "../interviews/InterviewCard";
 import ScheduleModal from "../interview/schedule/ScheduleModal";
-import { useState } from "react";
-import { clickAnalytics, scheduleAnalytics } from "@/lib/analytics";
+import useScheduleInterview from "@/hooks/useScheduleInterview";
 
 interface RecommendedInterviewsProps {
   recommendations: Interview[];
@@ -18,23 +17,13 @@ const RecommendedInterviews = ({
   recommendations,
   user,
 }: RecommendedInterviewsProps) => {
-  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-  const [selectedInterview, setSelectedInterview] = useState<Interview | null>(
-    null
-  );
-
-  const handleClick = (interview: Interview) => {
-    if (user?.id) {
-      clickAnalytics(interview, user.id);
-    }
-  };
-
-  const handleSchedule = (interview: Interview) => {
-    setSelectedInterview(interview);
-    setScheduleModalOpen(true);
-    if (user?.id) scheduleAnalytics(interview, user.id);
-  };
-
+  const {
+    selectedInterview,
+    setScheduleModalOpen,
+    handleClick,
+    handleSchedule,
+    scheduleModalOpen,
+  } = useScheduleInterview(user);
   return (
     <>
       <Swiper
