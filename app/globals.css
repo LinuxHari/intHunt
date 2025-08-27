@@ -153,7 +153,8 @@
   li {
     @apply text-light-100;
   }
-  button {
+  button,
+  a {
     @apply cursor-pointer;
   }
 }
@@ -390,4 +391,13 @@
 
 @utility animate-fadeIn {
   animation: fadeIn 0.3s ease-in-out;
+}
+
+.swiper-button-prev {
+  right: 40px !important;
+  left: auto !important;
+}
+
+.custom-nav {
+  top: 24px !important;
 }

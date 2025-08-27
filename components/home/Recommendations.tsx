@@ -1,28 +1,36 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import InterviewCard from "../shared/InterviewCard";
+import RecommendedInterviews from "./RecommendedInterviews";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface RecommendationsProps {
   recommendations: Interview[];
+  user: User | null;
 }
 
-const Recommendations = ({ recommendations }: RecommendationsProps) => {
-  if (!recommendations || !recommendations.length) return null;
+const Recommendations = ({ recommendations, user }: RecommendationsProps) => {
+  if (!recommendations.length) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Performance</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-4 gap-4">
-          {recommendations.map((interview, index) => (
-            <InterviewCard
-              key={index}
-              interviewId={interview.id}
-              {...interview}
-            />
-          ))}
+    <Card className="border-none shadow-none space-y-5">
+      <CardHeader className="flex justify-between items-center p-0 relative">
+        <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 dark:text-white">
+          Recommended Interviews
+        </CardTitle>
+        <div className="flex space-x-2">
+          <div className="swiper-button-prev custom-nav after:hidden">
+            <button className="border border-primary p-1 rounded-full">
+              <ArrowLeft />
+            </button>
+          </div>
+          <div className="swiper-button-next custom-nav after:hidden">
+            <button className="border border-primary p-1 rounded-full">
+              <ArrowRight />
+            </button>
+          </div>
         </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <RecommendedInterviews recommendations={recommendations} user={user} />
       </CardContent>
     </Card>
   );

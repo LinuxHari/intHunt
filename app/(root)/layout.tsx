@@ -15,7 +15,7 @@ const Layout = async ({
   // if (!isUserAuthenticated) redirect("/sign-in");
 
   return (
-    <div className="root-layout">
+    <div className="root-layout space-y-14">
       <Navigation />
       {children}
       <Footer />

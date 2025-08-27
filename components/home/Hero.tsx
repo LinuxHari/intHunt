@@ -4,7 +4,7 @@ import SearchHero from "./SearchHero";
 
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 p-8 md:p-12 mb-12">
+    <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 p-8 md:p-12">
       <div className="relative z-10 grid lg:grid-cols-2 gap-8 items-center">
         <div className="space-y-6">
           <div className="space-y-4">
