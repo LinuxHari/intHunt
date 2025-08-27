@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 
 const Banner = () => {
   return (
-    <div className="rounded-xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 border border-blue-100 dark:border-blue-900/20 mb-8 shadow-sm hover:scale-105 duration-300">
+    <div className="rounded-xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 border border-blue-100 dark:border-blue-900/20 mb-8 shadow-sm duration-300 hover:shadow-lg">
       <div className="flex flex-wrap justify-center md:justify-start items-center gap-8">
         <div className="flex-shrink-0">
           <div className="relative mt-10 md:mt-0 h-72 w-72 lg:w-60 lg:h-60 md:rounded-l-xl overflow-hidden">

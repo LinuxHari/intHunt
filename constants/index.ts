@@ -151,18 +151,16 @@ export const features = [
     icon: Brain,
     title: "AI-Powered Interviews",
     description:
-      "Experience realistic interview simulations powered by cutting-edge AI technology.",
+      "Simulate real-world interviews with advanced AI intelligence.",
   },
   {
     icon: ClipboardList,
     title: "Predefined Interview Sets",
-    description:
-      "Choose from a curated list of interviews designed for different roles and industries.",
+    description: "Access curated, role-specific interview sets for practice.",
   },
   {
     icon: CheckCircle,
     title: "Instant Feedback",
-    description:
-      "Receive actionable feedback immediately to improve your skills and confidence.",
+    description: "Get quick, actionable feedback instantly to improve skills.",
   },
 ];
