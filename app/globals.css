@@ -394,10 +394,23 @@
 }
 
 .swiper-button-prev {
-  right: 40px !important;
-  left: auto !important;
+  left: -20px !important;
+}
+
+.swiper-button-next {
+  right: -20px !important;
+}
+
+@media (max-width: 768px) {
+  .swiper-button-prev {
+    left: -12px !important;
+  }
+
+  .swiper-button-next {
+    right: -12px !important;
+  }
 }
 
 .custom-nav {
-  top: 24px !important;
+  top: 200px !important;
 }

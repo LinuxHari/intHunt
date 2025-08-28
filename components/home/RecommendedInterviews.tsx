@@ -28,7 +28,17 @@ const RecommendedInterviews = ({
     <>
       <Swiper
         modules={[Navigation]}
-        slidesPerView={3}
+        breakpoints={{
+          320: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: 2,
+          },
+          1280: {
+            slidesPerView: 3,
+          },
+        }}
         spaceBetween={16}
         navigation={{
           prevEl: ".swiper-button-prev",
@@ -41,6 +51,7 @@ const RecommendedInterviews = ({
               interview={interview}
               onSelect={handleClick}
               onSchedule={handleSchedule}
+              scale={false}
             />
           </SwiperSlide>
         ))}

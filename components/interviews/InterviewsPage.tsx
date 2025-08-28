@@ -34,7 +34,7 @@ const InterviewsPage = ({
   } = useInterviews({ searchParams, interviews, userId });
 
   return (
-    <main className="space-y-8">
+    <main className="space-y-8 px-4">
       <InterviewsHeader />
 
       <InterviewsFilters

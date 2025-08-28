@@ -5,20 +5,28 @@ import DisplayTechIcons from "@/components/shared/DisplayTechIcons";
 import InterviewCardStats from "./interviewCardStats";
 import InterviewBadges from "../dashboard/publishedInterviews/InterviewBadges";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface BrowseInterviewCardProps {
   interview: Interview;
   onSchedule: (interview: Interview) => void;
   onSelect: (interview: Interview) => void;
+  scale?: boolean;
 }
 
 const InterviewCard = ({
   interview,
   onSchedule,
   onSelect,
+  scale = true,
 }: BrowseInterviewCardProps) => {
   return (
-    <Card className="hover:shadow-lg transition-all duration-200 hover:scale-105 cursor-default">
+    <Card
+      className={cn(
+        "hover:shadow-lg transition-all duration-200 cursor-default",
+        scale ? "hover:scale-105" : null
+      )}
+    >
       <CardContent className="p-6">
         <div className="space-y-4">
           <div>
@@ -56,9 +64,9 @@ const InterviewCard = ({
             <Link
               href={`/interview/${interview.id}`}
               onClick={() => onSelect(interview)}
-              className="flex-1"
+              className="flex-1 w-full"
             >
-              <Button>
+              <Button className="w-full">
                 <Play className="h-4 w-4 mr-2" />
                 Attend Now
               </Button>
