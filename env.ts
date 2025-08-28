@@ -13,6 +13,8 @@ const env = createEnv({
     BIGQUERY_PRIVATE_KEY: z.string(),
     CRON_SECRET: z.string(),
     NODE_ENV: z.enum(["development", "production"]),
+    RESEND_API_KEY: z.string(),
+    RESEND_FROM_EMAIL: z.string(),
   },
   client: {
     NEXT_PUBLIC_VAPI_WEB_TOKEN: z.string().min(5),
@@ -59,6 +61,8 @@ const env = createEnv({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
   },
 });
 
