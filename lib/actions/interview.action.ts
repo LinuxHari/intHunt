@@ -388,7 +388,7 @@ export const getInterviewRecommendations = async (): Promise<
     if (!user) throw "User not found";
     const recommendations = (await runBigQueryQuery(
       getRecommendationsQuery(user.id)
-    )) as { item_id: string; predicted_interaction_score: number }[];
+    )) as BigQueryRecommendation;
 
     const recommendedInterviews = await db
       .select()

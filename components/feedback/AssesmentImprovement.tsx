@@ -3,8 +3,8 @@ import { Star, CheckCircle, Target } from "lucide-react";
 
 interface AssesmentImprovementProps {
   finalAssessment: string;
-  strengths: string[];
-  areasForImprovement: string[];
+  strengths: Array<string>;
+  areasForImprovement: Array<string>;
 }
 
 const AssesmentImprovement = ({

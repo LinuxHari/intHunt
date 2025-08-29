@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 
 type UpcomingInterviewsProps = {
-  upcomingInterviews: Interview[] | null;
+  upcomingInterviews: Array<Interview> | null;
   user: User | null;
 };
 

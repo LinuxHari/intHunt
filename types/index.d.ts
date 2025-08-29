@@ -7,8 +7,8 @@ interface Feedback {
     score: number;
     comment: string;
   }>;
-  strengths: string[];
-  areasForImprovement: string[];
+  strengths: Array<string>;
+  areasForImprovement: Array<string>;
   finalAssessment: string;
   createdAt: Date;
   role: string;
@@ -25,9 +25,9 @@ interface BaseInterview {
 }
 
 interface Interview extends BaseInterview {
-  techstack: string[];
+  techstack: Array<string>;
   description: string;
-  questions: string[];
+  questions: Array<string>;
   rating: {
     average: number;
     count: number;
@@ -44,14 +44,14 @@ interface UpcomingInterview extends BaseInterview {
   createdAt: Date;
   scheduledAt: Date;
   description: string;
-  techstack: string[];
+  techstack: Array<string>;
 }
 
 interface PublishedInterview extends BaseInterview {
   difficulty: Interview["difficulty"];
   createdAt: Date;
   description: string;
-  techstack: string[];
+  techstack: Array<string>;
   attendees: number;
   averageScore: number;
 }
@@ -61,13 +61,13 @@ interface AttendedInterview extends BaseInterview {
   attendedAt: Date;
   score: number;
   feedback: string;
-  techStack: string[];
+  techStack: Array<string>;
 }
 
 interface InterviewCompletionParams {
   interviewId: string;
   userId: string;
-  transcript: { role: string; content: string }[];
+  transcript: Array<{ role: string; content: string }>;
   feedbackId?: string;
 }
 
@@ -88,7 +88,7 @@ interface InterviewCardProps {
   userId?: string;
   role: string;
   type: string;
-  techstack: string[];
+  techstack: Array<string>;
   createdAt?: string;
 }
 
@@ -109,11 +109,6 @@ interface GetFeedbackByInterviewIdParams {
   userId: string;
 }
 
-interface GetLatestInterviewsParams {
-  userId: string;
-  limit?: number;
-}
-
 interface SignInParams {
   email: string;
   password: string;
@@ -130,12 +125,12 @@ interface InterviewFormProps {
   role: string;
   level: string;
   type: string;
-  techstack: string[];
+  techstack: Array<string>;
   amount: number;
 }
 
 interface TechIconProps {
-  techStack: string[];
+  techStack: Array<string>;
 }
 interface CatchReturn {
   success: false;
@@ -166,8 +161,8 @@ interface AnalyticsQueryRow {
 interface ReturnUserAnalytics {
   success: true;
   analytics: {
-    currentPeriod: AnalyticsData[];
-    previousPeriod: AnalyticsData[];
+    currentPeriod: Array<AnalyticsData>;
+    previousPeriod: Array<AnalyticsData>;
   };
 }
 
@@ -222,7 +217,7 @@ interface ReturnProfile {
 
 interface ReturnUpcomingInterviews {
   success: true;
-  upcomingInterviews: UpcomingInterview[];
+  upcomingInterviews: Array<UpcomingInterview>;
   totalCounts: number;
 }
 
@@ -245,12 +240,12 @@ interface AttendedInterviewDetailsData {
   level: Interview["level"];
   difficulty: Interview["difficulty"];
   role: string;
-  techStack: string[];
+  techStack: Array<string>;
 }
 
 interface ReturnAttendedInterviews {
   success: boolean;
-  attendedInterviews: AttendedInterview[];
+  attendedInterviews: Array<AttendedInterview>;
   totalCounts: number;
 }
 
@@ -264,7 +259,7 @@ interface InterviewSearchParams {
 
 type ReturnInterviewSearch = {
   success: true;
-  interviews: Interview[];
+  interviews: Array<Interview>;
   totalCount: number;
   hasNextPage: boolean;
 };
@@ -275,3 +270,8 @@ type ScheduleDetails = {
   time: string;
   timezone: string;
 };
+
+type BigQueryRecommendation = Array<{
+  item_id: string;
+  predicted_interaction_score: number;
+}>;

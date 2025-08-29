@@ -21,7 +21,7 @@ const PublishedInterviewsList = ({
     ? [interviews.publishedInterviews, interviews.totalCounts]
     : [[], 0];
   const [interviewsList, setInterviewsList] =
-    useState<PublishedInterview[]>(initialInterviews);
+    useState<Array<PublishedInterview>>(initialInterviews);
   const [page, setPage] = useState(1);
   const [isPending, startTransition] = useTransition();
   const hasMore = interviewsList.length < totalInterviews;

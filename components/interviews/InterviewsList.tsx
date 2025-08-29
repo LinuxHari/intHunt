@@ -1,7 +1,7 @@
 import InterviewCard from "./InterviewCard";
 
 interface InterviewsGridProps {
-  interviews: Interview[];
+  interviews: Array<Interview>;
   onSchedule: (interview: Interview) => void;
   onSelect: (interview: Interview) => void;
 }

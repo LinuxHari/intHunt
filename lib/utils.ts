@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { twMerge } from "tailwind-merge";
 import { TrendingUp, Users, Clock } from "lucide-react";
 
-export const cn = (...inputs: ClassValue[]) => {
+export const cn = (...inputs: Array<ClassValue>) => {
   return twMerge(clsx(inputs));
 };
 
@@ -87,7 +87,7 @@ export function getTimeUntil(date: string | number | Date): string {
 }
 
 export const getInterviewsDueToday = (
-  interviews: UpcomingInterview[]
+  interviews: Array<UpcomingInterview>
 ): number => {
   const tomorrow = new Date(Date.now() + 86400000);
   return interviews.filter(
@@ -196,14 +196,14 @@ const buildExpectedPeriods = (
   start: Date,
   end: Date,
   currentEnd: Date
-): string[] => {
+): Array<string> => {
   const endDate = new Date(Math.min(end.getTime(), currentEnd.getTime()));
 
   if (duration === "week") {
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const startDate = new Date(start);
     const startDay = startDate.getDay() || 7;
-    const periods: string[] = [];
+    const periods: Array<string> = [];
     const daysInPeriod =
       Math.ceil(
         (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
@@ -216,7 +216,7 @@ const buildExpectedPeriods = (
     return periods;
   } else if (duration === "month") {
     const startDate = new Date(start);
-    const periods: string[] = [];
+    const periods: Array<string> = [];
     const daysInMonth =
       Math.ceil(
         (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
@@ -243,7 +243,7 @@ const buildExpectedPeriods = (
       "Dec",
     ];
     const startDate = new Date(start);
-    const periods: string[] = [];
+    const periods: Array<string> = [];
     const startMonth = startDate.getMonth();
     const endMonth =
       endDate.getMonth() +
@@ -259,12 +259,12 @@ const buildExpectedPeriods = (
 };
 
 export const formatAnalytics = (
-  rows: AnalyticsQueryRow[],
+  rows: Array<AnalyticsQueryRow>,
   duration: Duration,
   start: Date,
   end: Date,
   currentEnd: Date
-): AnalyticsData[] => {
+): Array<AnalyticsData> => {
   const expected = buildExpectedPeriods(duration, start, end, currentEnd);
 
   const map = new Map<string, AnalyticsQueryRow>();

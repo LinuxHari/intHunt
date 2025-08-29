@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     let emailsSent = 0;
     let errors = 0;
 
-    for (const interview of scheduledInterviewList || []) {
+    for (const interview of scheduledInterviewList) {
       try {
         const {
           data: { user },

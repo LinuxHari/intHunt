@@ -23,7 +23,7 @@ interface InterviewCardProps {
   userId?: string;
   role: string;
   type: Interview["type"];
-  techstack: string[];
+  techstack: Array<string>;
   createdAt: Date | string;
   difficulty: Interview["difficulty"];
   level: Interview["level"];

@@ -3,7 +3,7 @@ import RecommendedInterviews from "./RecommendedInterviews";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface RecommendationsProps {
-  recommendations: Interview[];
+  recommendations: Array<Interview>;
   user: User | null;
 }
 

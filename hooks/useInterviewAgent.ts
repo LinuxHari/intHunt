@@ -28,7 +28,7 @@ const useInterviewAgent = ({
 }: AgentProps & { user: User }) => {
   const router = useRouter();
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
-  const [messages, setMessages] = useState<SavedMessage[]>([]);
+  const [messages, setMessages] = useState<Array<SavedMessage>>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [lastMessage, setLastMessage] = useState<string>("");
 
@@ -84,7 +84,7 @@ const useInterviewAgent = ({
       setLastMessage(messages[messages.length - 1].content);
     }
 
-    const handleInterviewCompletion = async (messages: SavedMessage[]) => {
+    const handleInterviewCompletion = async (messages: Array<SavedMessage>) => {
       const { success, feedbackId: id } = await manageInterviewCompletion({
         interviewId: interview.id,
         userId: user.id,

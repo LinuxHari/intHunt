@@ -29,7 +29,7 @@ const useInterviews = ({
   searchParams,
   userId,
 }: InterviewsPageProps) => {
-  const [interviewsList, setInterviewsList] = useState<Interview[]>(
+  const [interviewsList, setInterviewsList] = useState<Array<Interview>>(
     interviews.interviews
   );
 

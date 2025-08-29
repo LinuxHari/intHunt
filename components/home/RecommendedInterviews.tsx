@@ -9,7 +9,7 @@ import ScheduleModal from "../interview/schedule/ScheduleModal";
 import useScheduleInterview from "@/hooks/useScheduleInterview";
 
 interface RecommendedInterviewsProps {
-  recommendations: Interview[];
+  recommendations: Array<Interview>;
   user: User | null;
 }
 

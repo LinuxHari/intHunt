@@ -31,13 +31,13 @@ interface ChartTooltipProps
   extends Omit<React.ComponentProps<"div">, "content"> {
   content?: React.ComponentType<ChartTooltipContentProps> | React.ReactNode;
   active?: boolean;
-  payload?: TooltipPayload[];
+  payload?: Array<TooltipPayload>;
   label?: string;
 }
 
 interface ChartTooltipContentProps extends React.ComponentProps<"div"> {
   active?: boolean;
-  payload?: TooltipPayload[];
+  payload?: Array<TooltipPayload>;
   label?: string;
   hideLabel?: boolean;
   hideIndicator?: boolean;

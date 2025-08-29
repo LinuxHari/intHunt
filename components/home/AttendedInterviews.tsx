@@ -5,7 +5,7 @@ import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 
 type AttendedInterviewsProps = {
-  userInterviews: PublishedInterview[] | null;
+  userInterviews: Array<PublishedInterview> | null;
   user: User | null;
 };
 

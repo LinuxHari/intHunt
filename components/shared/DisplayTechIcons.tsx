@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface DisplayTechIconsProps {
-  techStack: string[];
+  techStack: Array<string>;
   className?: string;
   slice?: boolean;
 }

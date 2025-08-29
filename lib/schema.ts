@@ -29,9 +29,9 @@ export const interviews = pgTable(
     type: interviewTypeEnum().notNull(),
     difficulty: interviewDifficultyEnum().notNull(),
     level: interviewLevelEnum().notNull(),
-    techstack: jsonb("tech_stack").$type<string[]>().notNull().default([]),
+    techstack: jsonb("tech_stack").$type<Array<string>>().notNull().default([]),
     description: varchar("description", { length: 500 }).notNull(),
-    questions: jsonb("questions").$type<string[]>().notNull().default([]),
+    questions: jsonb("questions").$type<Array<string>>().notNull().default([]),
     questionCount: smallint("question_count").notNull().default(0),
     rating: jsonb("rating")
       .$type<{ average: number; count: number }>()
@@ -85,9 +85,9 @@ export const feedback = pgTable("feedback", {
   categoryScores: jsonb("category_scores")
     .$type<FeedbackType["categoryScores"]>()
     .notNull(),
-  strengths: jsonb().$type<string[]>().notNull(),
+  strengths: jsonb().$type<Array<string>>().notNull(),
   areasForImprovement: jsonb("areas_for_improvement")
-    .$type<string[]>()
+    .$type<Array<string>>()
     .notNull(),
   finalAssessment: varchar("final_assessment").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
