@@ -67,8 +67,8 @@ const useInterviews = ({
           setInterviewsList((prev) => [...prev, ...result.interviews]);
         } else {
           setInterviewsList(result.interviews);
-          setHasNext(result.hasNextPage);
         }
+        setHasNext(result.hasNextPage);
       } else {
         toast.error("Failed to load more interviews");
         if (!append) {
