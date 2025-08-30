@@ -385,7 +385,7 @@ export const getInterviewRecommendations = async (): Promise<
 > => {
   try {
     const user = await getCurrentUser();
-    if (!user) throw "User not found";
+    if (!user) return { success: true, recommendations: [] };
     const recommendations = (await runBigQueryQuery(
       getRecommendationsQuery(user.id)
     )) as BigQueryRecommendation;

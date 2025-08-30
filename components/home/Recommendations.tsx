@@ -12,7 +12,7 @@ const Recommendations = ({ recommendations, user }: RecommendationsProps) => {
 
   return (
     <Card className="border-none shadow-none space-y-5">
-      <CardHeader className="flex justify-between items-center p-0 relative">
+      <CardHeader className="flex justify-between items-center p-0 relative space-y-0">
         <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 dark:text-white">
           Recommended Interviews
         </CardTitle>

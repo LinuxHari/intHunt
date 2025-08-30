@@ -7,6 +7,7 @@ import "swiper/css/navigation";
 import InterviewCard from "../interviews/InterviewCard";
 import ScheduleModal from "../interview/schedule/ScheduleModal";
 import useScheduleInterview from "@/hooks/useScheduleInterview";
+import { carouselBreakpoints } from "@/constants";
 
 interface RecommendedInterviewsProps {
   recommendations: Array<Interview>;
@@ -28,17 +29,7 @@ const RecommendedInterviews = ({
     <>
       <Swiper
         modules={[Navigation]}
-        breakpoints={{
-          320: {
-            slidesPerView: 1,
-          },
-          768: {
-            slidesPerView: 2,
-          },
-          1280: {
-            slidesPerView: 3,
-          },
-        }}
+        breakpoints={carouselBreakpoints}
         spaceBetween={16}
         navigation={{
           prevEl: ".swiper-button-prev",
@@ -46,7 +37,7 @@ const RecommendedInterviews = ({
         }}
       >
         {recommendations.map((interview) => (
-          <SwiperSlide key={interview.id} className="min-h-full py-5">
+          <SwiperSlide key={interview.id} className="min-h-full py-2">
             <InterviewCard
               interview={interview}
               onSelect={handleClick}

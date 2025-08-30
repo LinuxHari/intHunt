@@ -1,0 +1,45 @@
+name: Call reminder endpoint every 5 minutes
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  call_email_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send API call to reminder endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          BASE_URL: ${{ vars.BASE_URL }}
+        run: |
+          URL="${BASE_URL%/}/api/send-interview-reminders"
+          MAX_RETRIES=3
+          RETRY_DELAY=5
+          TIMEOUT=15
+
+          echo "Calling $URL"
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i of $MAX_RETRIES..."
+            response=$(curl -s -o response.txt -w "%{http_code}" \
+              --max-time $TIMEOUT \
+              -X POST \
+              -H "Authorization: Bearer $CRON_SECRET" \
+              "$URL")
+
+            if [ "$response" -eq 200 ]; then
+              echo "Reminder call successful."
+              cat response.txt
+              exit 0
+            else
+              echo "Reminder call failed with status $response"
+              cat response.txt
+              if [ "$i" -lt "$MAX_RETRIES" ]; then
+                echo "Retrying in $RETRY_DELAY seconds..."
+                sleep $RETRY_DELAY
+              fi
+            fi
+          done
+
+          echo "Reminder call failed after $MAX_RETRIES attempts."
+          exit 1
