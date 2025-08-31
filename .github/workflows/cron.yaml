@@ -13,7 +13,7 @@ jobs:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           BASE_URL: ${{ vars.BASE_URL }}
         run: |
-          URL="${BASE_URL%/}/api/send-interview-reminders"
+          URL="${BASE_URL%/}/api/cron/send-interview-reminders"
           MAX_RETRIES=3
           RETRY_DELAY=5
           TIMEOUT=15
