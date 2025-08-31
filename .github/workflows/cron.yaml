@@ -19,6 +19,7 @@ jobs:
           TIMEOUT=15
 
           echo "Calling $URL"
+
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES..."
             response=$(curl -s -o response.txt -w "%{http_code}" \
@@ -26,7 +27,7 @@ jobs:
               -X POST \
               -H "Authorization: Bearer $CRON_SECRET" \
               "$URL")
-
+            
             if [ "$response" -eq 200 ]; then
               echo "Reminder call successful."
               cat response.txt
