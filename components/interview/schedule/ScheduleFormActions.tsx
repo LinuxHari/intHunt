@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Spinner from "@/components/ui/spinner";
 
 interface ScheduleFormActionsProps {
   onCancel: () => void;
@@ -20,7 +21,13 @@ const ScheduleFormActions = ({
         Cancel
       </Button>
       <Button type="submit" className="flex-1" disabled={isScheduling}>
-        {isScheduling ? "Scheduling..." : "Schedule Interview"}
+        {isScheduling ? (
+          <>
+            <Spinner /> Scheduling...{" "}
+          </>
+        ) : (
+          "Schedule Interview"
+        )}
       </Button>
     </div>
   );

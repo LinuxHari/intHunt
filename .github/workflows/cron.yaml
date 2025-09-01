@@ -7,7 +7,7 @@ on:
 jobs:
   call_email_api:
     runs-on: ubuntu-latest
-    environment: Cron # This line links to your "Cron" environment
+    environment: Cron
     steps:
       - name: Send API call to reminder endpoint
         env:
