@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient();
 
-    const fifteenMinutesFromNow = dayjs().add(15, "minute").toDate();
+    const fifteenMinutesFromNow = dayjs().add(60, "minute").toDate();
     const nowEpoch = dayjs().unix();
 
     const scheduledInterviewList = await db
