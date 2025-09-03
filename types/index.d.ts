@@ -42,9 +42,10 @@ interface UpcomingInterview extends BaseInterview {
   attendees: number;
   averageScore: number;
   createdAt: Date;
-  scheduledAt: Date;
+  scheduledAt: string;
   description: string;
   techstack: Array<string>;
+  timezone: string;
 }
 
 interface PublishedInterview extends BaseInterview {

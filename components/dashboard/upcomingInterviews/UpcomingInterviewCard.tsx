@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { Calendar, Notebook, Play } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,16 +6,20 @@ import { getTimeUntil } from "@/lib/utils";
 import InterviewBadges from "../publishedInterviews/InterviewBadges";
 import Link from "next/link";
 import DisplayTechIcons from "@/components/shared/DisplayTechIcons";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const UpcomingInterviewCard = ({
   interview,
 }: {
   interview: UpcomingInterview;
 }) => {
-  const formattedDate = dayjs(interview.scheduledAt).format(
-    "MMM D, YYYY hh:mm A"
-  );
   const timeUntil = getTimeUntil(interview.scheduledAt);
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   return (
     <Card className="hover:shadow-lg transition-all duration-200 hover:scale-105 cursor-default">
@@ -43,7 +46,12 @@ const UpcomingInterviewCard = ({
           <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
-              <span>{formattedDate}</span>
+              <span>
+                {dayjs(interview.scheduledAt)
+                  .tz(interview.timezone)
+                  .tz(userTimezone)
+                  .format("MMM D, YYYY hh:mm A")}
+              </span>
             </div>
             <div className="flex items-center gap-1">
               <Notebook className="h-4 w-4" />

@@ -6,7 +6,7 @@ import utc from "dayjs/plugin/utc";
 import { db } from "@/drizzle";
 import { interviews, scheduledInterviews } from "@/lib/schema";
 import { createClient } from "@/supabase/admin";
-import { and, eq, gt, lte } from "drizzle-orm";
+import { and, eq, lte, sql } from "drizzle-orm";
 import { generateEmailHTML } from "@/lib/templates";
 import env from "@/env";
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
 
     const fifteenMinutesFromNow = dayjs().add(15, "minute").toDate();
-    const now = dayjs().toDate();
+    const nowEpoch = dayjs().unix();
 
     const scheduledInterviewList = await db
       .select({
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       .where(
         and(
           lte(scheduledInterviews.scheduledAt, fifteenMinutesFromNow),
-          gt(scheduledInterviews.scheduledAt, now),
+          sql`extract(epoch from (${scheduledInterviews.scheduledAt} AT TIME ZONE ${scheduledInterviews.timezone})) > ${nowEpoch}`,
           eq(scheduledInterviews.reminderSent, false)
         )
       );

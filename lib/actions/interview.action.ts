@@ -7,7 +7,7 @@ import { getRecommendationsQuery } from "@/constants/queries";
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import { db } from "@/drizzle";
-import { eq, and, gt, inArray, desc, asc, count, sql } from "drizzle-orm";
+import { eq, and, inArray, desc, asc, count, sql } from "drizzle-orm";
 import { interviews, scheduledInterviews, feedback } from "../schema";
 import dayjs from "dayjs";
 
@@ -98,63 +98,52 @@ export const getUpcomingInterviews = async (
     const user = await getCurrentUser();
     if (!user) throw "User not found";
 
-    const today = dayjs().toDate();
+    const todayEpoch = dayjs().unix();
     const whereCondition = and(
       eq(scheduledInterviews.userId, user.id),
-      gt(scheduledInterviews.scheduledAt, today)
+      sql`extract(epoch from (${scheduledInterviews.scheduledAt} AT TIME ZONE ${scheduledInterviews.timezone})) > ${todayEpoch}`
     );
 
-    const [scheduledResult, totalCountResult] = await Promise.all([
+    const [upcomingInterviewsResult, totalCountResult] = await Promise.all([
       db
-        .select()
+        .select({
+          scheduledAt: sql<string>`${scheduledInterviews.scheduledAt}::text`,
+          timezone: scheduledInterviews.timezone,
+          id: interviews.id,
+          role: interviews.role,
+          questionCount: interviews.questionCount,
+          attendees: interviews.attendees,
+          averageScore: interviews.averageScore,
+          createdAt: interviews.createdAt,
+          level: interviews.level,
+          type: interviews.type,
+          difficulty: interviews.difficulty,
+          description: interviews.description,
+          techstack: interviews.techstack,
+        })
         .from(scheduledInterviews)
+        .innerJoin(
+          interviews,
+          eq(scheduledInterviews.interviewId, interviews.id)
+        )
         .where(whereCondition)
         .orderBy(asc(scheduledInterviews.scheduledAt))
         .limit(offset)
         .offset((page - 1) * offset),
+
       db
         .select({ count: count() })
         .from(scheduledInterviews)
         .where(whereCondition),
     ]);
 
-    if (scheduledResult.length === 0) {
+    if (upcomingInterviewsResult.length === 0) {
       return { success: true, upcomingInterviews: [], totalCounts: 0 };
     }
 
-    const interviewIds = scheduledResult.map((s) => s.interviewId!);
-    const interviewDetails = await db
-      .select({
-        id: interviews.id,
-        role: interviews.role,
-        questionCount: interviews.questionCount,
-        attendees: interviews.attendees,
-        averageScore: interviews.averageScore,
-        createdAt: interviews.createdAt,
-        level: interviews.level,
-        type: interviews.type,
-        difficulty: interviews.difficulty,
-        description: interviews.description,
-        techstack: interviews.techstack,
-      })
-      .from(interviews)
-      .where(inArray(interviews.id, interviewIds));
-
-    const interviewDetailsMap = new Map(
-      interviewDetails.map((interview) => [interview.id, interview])
-    );
-
-    const upcomingInterviews = scheduledResult.map((scheduled) => {
-      const interviewData = interviewDetailsMap.get(scheduled.interviewId!)!;
-      return {
-        scheduledAt: scheduled.scheduledAt!,
-        ...interviewData,
-      };
-    });
-
     return {
       success: true,
-      upcomingInterviews,
+      upcomingInterviews: upcomingInterviewsResult,
       totalCounts: totalCountResult[0].count,
     };
   } catch (error: unknown) {
