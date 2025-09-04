@@ -11,20 +11,20 @@ interface BrowseInterviewCardProps {
   interview: Interview;
   onSchedule: (interview: Interview) => void;
   onSelect: (interview: Interview) => void;
-  scale?: boolean;
+  scale?: "large" | "small";
 }
 
 const InterviewCard = ({
   interview,
   onSchedule,
   onSelect,
-  scale = true,
+  scale = "large",
 }: BrowseInterviewCardProps) => {
   return (
     <Card
       className={cn(
         "hover:shadow-lg transition-all duration-200 cursor-default",
-        scale ? "hover:scale-105" : null
+        scale === "large" ? "hover:scale-105" : "hover:scale-[1.02] mx-1"
       )}
     >
       <CardContent className="p-6">

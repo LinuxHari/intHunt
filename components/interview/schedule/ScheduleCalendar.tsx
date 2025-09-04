@@ -16,7 +16,37 @@ const ScheduleCalendar = ({
   selectedDate,
   onDateSelect,
 }: ScheduleCalendarProps) => {
-  const calendarDays = useMemo(() => generateCalendarDays(currentMonth), []);
+  const calendarDays = useMemo(
+    () => generateCalendarDays(currentMonth),
+    [currentMonth]
+  );
+
+  const getDateInfo = (date: Dayjs) => {
+    const isPastOrToday = date.isBefore(dayjs().add(1, "day").startOf("day"));
+    const isCurrentMonth = date.isSame(currentMonth, "month");
+    const isSelected = selectedDate && dayjs(selectedDate).isSame(date, "day");
+
+    return { isPastOrToday, isCurrentMonth, isSelected };
+  };
+
+  const getButtonClassName = (
+    isCurrentMonth: boolean,
+    isPastOrToday: boolean,
+    isSelected: boolean | null
+  ) => {
+    return cn(
+      "h-8 w-8 p-0 text-xs",
+      !isCurrentMonth && "text-slate-300 dark:text-slate-600",
+      isPastOrToday && "opacity-50 cursor-not-allowed",
+      isSelected && "ring-2 ring-blue-500"
+    );
+  };
+
+  const handleDateClick = (date: Dayjs, isPastOrToday: boolean) => {
+    if (!isPastOrToday) {
+      onDateSelect(date.toDate());
+    }
+  };
 
   return (
     <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4">
@@ -30,34 +60,27 @@ const ScheduleCalendar = ({
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-1">
-        {calendarDays.map((date, index) => {
-          const isPastOrToday = date.isBefore(
-            dayjs().add(1, "day").startOf("day")
-          );
-          const isCurrentMonth = date.isSame(currentMonth, "month");
-          const isSelected =
-            selectedDate && dayjs(selectedDate).isSame(date, "day");
 
-          return (
-            <Button
-              key={index}
-              type="button"
-              variant={isSelected ? "default" : "ghost"}
-              size="sm"
-              className={cn(
-                "h-8 w-8 p-0 text-xs",
-                !isCurrentMonth && "text-slate-300 dark:text-slate-600",
-                isPastOrToday && "opacity-50 cursor-not-allowed",
-                isSelected && "ring-2 ring-blue-500"
-              )}
-              disabled={isPastOrToday}
-              onClick={() => !isPastOrToday && onDateSelect(date.toDate())}
-            >
-              {date.date()}
-            </Button>
-          );
-        })}
+      <div className="grid grid-cols-7 gap-1">
+        {calendarDays.map((date, index) => (
+          <Button
+            key={index}
+            type="button"
+            variant={getDateInfo(date).isSelected ? "default" : "ghost"}
+            size="sm"
+            className={getButtonClassName(
+              getDateInfo(date).isCurrentMonth,
+              getDateInfo(date).isPastOrToday,
+              getDateInfo(date).isSelected
+            )}
+            disabled={getDateInfo(date).isPastOrToday}
+            onClick={() =>
+              handleDateClick(date, getDateInfo(date).isPastOrToday)
+            }
+          >
+            {date.date()}
+          </Button>
+        ))}
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ const RecommendedInterviews = ({
               interview={interview}
               onSelect={handleClick}
               onSchedule={handleSchedule}
-              scale={false}
+              scale="small"
             />
           </SwiperSlide>
         ))}
