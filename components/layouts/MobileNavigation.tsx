@@ -28,7 +28,7 @@ const MobileNavigation = ({ user }: MobileNavigationProps) => {
   };
 
   const navItems = [
-    { href: "/dashboard/analytics", label: "Dashboard", icon: Home },
+    { href: "/dashboard/upcoming", label: "Dashboard", icon: Home },
   ];
 
   return (

@@ -47,8 +47,9 @@ const UpcomingInterviewCard = ({
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
               <span>
-                {dayjs(interview.scheduledAt)
-                  .tz(interview.timezone)
+                {dayjs
+                  .utc(interview.scheduledAt)
+                  .tz(interview.timezone.toLowerCase())
                   .tz(userTimezone)
                   .format("MMM D, YYYY hh:mm A")}
               </span>

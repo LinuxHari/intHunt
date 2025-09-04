@@ -6,8 +6,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Control } from "react-hook-form";
-import { Dayjs } from "dayjs";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import CalendarHeader from "@/components/interview/schedule/ScheduleCalendarHeader";
 import Calendar from "@/components/interview/schedule/ScheduleCalendar";
 import { ScheduleFormType } from "@/validators";

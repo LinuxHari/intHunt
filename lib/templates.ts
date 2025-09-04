@@ -2,7 +2,8 @@ import env from "@/env";
 
 export const generateEmailHTML = (
   interview: Partial<Interview>,
-  timeString: string
+  timeString: string,
+  userName: string
 ): string => {
   return `
     <!doctype html>
@@ -13,14 +14,11 @@ export const generateEmailHTML = (
     <title>Interview Reminder</title>
   </head>
 
-  <body style="margin:0;padding:0;background-color:#0b1220;">
-     Full width wrapper 
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#0b1220;">
+  <body style="margin:0;padding:0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
       <tr>
         <td align="center" style="padding:24px;">
-           Card 
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:640px;border-radius:14px;overflow:hidden;background-color:#0b1220;">
-             Header 
             <tr>
               <td style="padding:24px;background:linear-gradient(135deg,#3b82f6 0%,#1d4ed8 100%);">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -37,19 +35,16 @@ export const generateEmailHTML = (
                 </table>
               </td>
             </tr>
-
-             Body 
             <tr>
               <td style="background-color:#0f172a;padding:28px;">
                 <h1 style="margin:0 0 8px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:22px;line-height:1.3;color:#f8fafc;font-weight:700;">
                   Upcoming interview reminder
                 </h1>
                 <p style="margin:0 0 18px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.7;color:#cbd5e1;">
-                  Hi {{.UserName}}, this is a friendly reminder that your interview for
-                  <span style="color:#93c5fd;font-weight:600;">{{.Role}}</span> is coming up. Be sure to join a few minutes early to check your mic and camera.
+                  Hi ${userName}, this is a friendly reminder that your interview for
+                  <span style="color:#93c5fd;font-weight:600;">${interview.role}</span> is coming up. Be sure to join a few minutes early to check your mic and camera.
                 </p>
 
-                 Details box 
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#0b1220;border:1px solid #1f2937;border-radius:12px;">
                   <tr>
                     <td style="padding:16px 18px;">
@@ -64,11 +59,11 @@ export const generateEmailHTML = (
                         </tr>
                         <tr>
                           <td style="padding:6px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;color:#94a3b8;">Role</td>
-                          <td style="padding:6px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;color:#e2e8f0;">${interview.role})</td>
+                          <td style="padding:6px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;color:#e2e8f0;">${interview.role}</td>
                         </tr>
                         <tr>
                           <td style="padding:6px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;color:#94a3b8;">Type</td>
-                          <td style="padding:6px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;color:#e2e8f0;">{${interview.type}}</td>
+                          <td style="padding:6px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;color:#e2e8f0;">${interview.type}</td>
                         </tr>
                         <tr>
                           <td style="padding:6px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;color:#94a3b8;">Difficulty</td>
@@ -79,7 +74,6 @@ export const generateEmailHTML = (
                   </tr>
                 </table>
 
-                 CTA 
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:22px;">
                   <tr>
                     <td align="center">
@@ -91,7 +85,6 @@ export const generateEmailHTML = (
                   </tr>
                 </table>
 
-                 Fallback link 
                 <p style="margin:18px 0 0 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#64748b;">
                   If the button doesn’t work, copy and paste this link into your browser:<br />
                   <a href="${env.NEXT_PUBLIC_BASE_URL}/interview/${interview.id}" style="color:#93c5fd;word-break:break-all;text-decoration:underline;">${env.NEXT_PUBLIC_BASE_URL}/interview/${interview.id}</a>
@@ -99,7 +92,6 @@ export const generateEmailHTML = (
               </td>
             </tr>
 
-             Footer 
             <tr>
               <td style="background-color:#0b1220;padding:18px 24px;border-top:1px solid #1f2937;">
                 <p style="margin:0 0 6px 0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:12px;color:#94a3b8;">
@@ -111,7 +103,6 @@ export const generateEmailHTML = (
               </td>
             </tr>
           </table>
-           /Card 
         </td>
       </tr>
     </table>

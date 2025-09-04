@@ -6,7 +6,7 @@ import utc from "dayjs/plugin/utc";
 import { db } from "@/drizzle";
 import { interviews, scheduledInterviews } from "@/lib/schema";
 import { createClient } from "@/supabase/admin";
-import { and, eq, lte, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { generateEmailHTML } from "@/lib/templates";
 import env from "@/env";
 
@@ -26,7 +26,8 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient();
 
-    const fifteenMinutesFromNow = dayjs().add(60, "minute").toDate();
+    const oneHourFromNow = dayjs().add(60, "minute");
+    const oneHourFromNowEpoch = oneHourFromNow.unix();
     const nowEpoch = dayjs().unix();
 
     const scheduledInterviewList = await db
@@ -43,8 +44,8 @@ export async function POST(request: NextRequest) {
       .innerJoin(interviews, eq(scheduledInterviews.interviewId, interviews.id))
       .where(
         and(
-          lte(scheduledInterviews.scheduledAt, fifteenMinutesFromNow),
           sql`extract(epoch from (${scheduledInterviews.scheduledAt} AT TIME ZONE ${scheduledInterviews.timezone})) > ${nowEpoch}`,
+          sql`extract(epoch from (${scheduledInterviews.scheduledAt} AT TIME ZONE ${scheduledInterviews.timezone})) <= ${oneHourFromNowEpoch}`,
           eq(scheduledInterviews.reminderSent, false)
         )
       );
@@ -65,6 +66,8 @@ export async function POST(request: NextRequest) {
           error: userError,
         } = await supabase.auth.admin.getUserById(interview.userId);
 
+        console.log("User error", userError);
+
         if (userError || !user?.email) {
           errors++;
           continue;
@@ -74,9 +77,14 @@ export async function POST(request: NextRequest) {
         const scheduledTime = dayjs(interview.scheduledAt).tz(
           interview.timezone
         );
-        const timeString = scheduledTime.format("MMMM D, YYYY at h:mm A z");
+
+        const timeString = scheduledTime.format("MMMM D, YYYY at h:mm A");
         const emailSubject = `Mock Interview Reminder - ${interview.role} Interview`;
-        const emailHtml = generateEmailHTML(interview, timeString);
+        const emailHtml = generateEmailHTML(
+          interview,
+          timeString,
+          user.user_metadata.name
+        );
 
         const { error: emailError } = await resend.emails.send({
           from: env.RESEND_FROM_EMAIL,
@@ -85,24 +93,15 @@ export async function POST(request: NextRequest) {
           html: emailHtml,
         });
 
+        console.log(emailError, "email error");
+
         if (emailError) {
           errors++;
           continue;
         }
 
-        const { error: updateError } = await supabase
-          .from("scheduledInterviews")
-          .update({
-            reminder_sent: true,
-            email_sent_at: new Date().toISOString(),
-          })
-          .eq("id", interview.id);
-
-        if (updateError) {
-          errors++;
-        } else {
-          emailsSent++;
-        }
+        await db.update(scheduledInterviews).set({ reminderSent: true });
+        emailsSent++;
       } catch (error: unknown) {
         console.error("Error sending email", error);
         errors++;

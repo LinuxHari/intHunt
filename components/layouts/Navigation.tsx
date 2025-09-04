@@ -9,7 +9,7 @@ import Logo from "../shared/Logo";
 const Navigation = async () => {
   const user = await getCurrentUser();
   const navItems = [
-    { href: "/dashboard/analytics", label: "Dashboard", icon: Home },
+    { href: "/dashboard/upcoming", label: "Dashboard", icon: Home },
   ];
 
   return (
