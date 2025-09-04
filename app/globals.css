@@ -394,11 +394,11 @@
 }
 
 .swiper-button-prev {
-  left: -20px !important;
+  left: -10px !important;
 }
 
 .swiper-button-next {
-  right: -20px !important;
+  right: -10px !important;
 }
 
 @media (max-width: 768px) {
