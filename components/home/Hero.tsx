@@ -41,6 +41,7 @@ const Hero = () => {
               height={400}
               className="drop-shadow-2xl"
               priority
+              fetchPriority="high"
             />
             <div className="absolute -top-4 -right-4 w-24 h-24 bg-blue-500/10 rounded-full blur-xl"></div>
             <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-500/10 rounded-full blur-xl"></div>

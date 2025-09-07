@@ -8,18 +8,15 @@ import { getInterviewRecommendations } from "@/lib/actions/interview.action";
 export const dynamic = "force-dynamic";
 
 const Home = async () => {
-  const recommendations = await getInterviewRecommendations();
-  const recommendedInterviews = recommendations.success
-    ? recommendations.recommendations
-    : [];
+  const recommendations = getInterviewRecommendations();
 
-  const user = await getCurrentUser();
+  const user = getCurrentUser();
 
   return (
     <div className="min-h-screen">
       <main className="container space-y-14 mx-auto lg:px-4">
         <Hero />
-        <Recommendations recommendations={recommendedInterviews} user={user} />
+        <Recommendations recommendations={recommendations} user={user} />
         <Features />
         <Banner />
       </main>

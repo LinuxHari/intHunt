@@ -1,14 +1,26 @@
+import { use } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RecommendedInterviews from "./RecommendedInterviews";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface RecommendationsProps {
-  recommendations: Array<Interview>;
-  user: User | null;
+  recommendations: Promise<
+    | {
+        success: true;
+        recommendations: Array<Interview>;
+      }
+    | CatchReturn
+  >;
+  user: Promise<User | null>;
 }
 
 const Recommendations = ({ recommendations, user }: RecommendationsProps) => {
-  if (!recommendations.length) return null;
+  const recommendedInterviews = use(recommendations);
+  const userInfo = use(user);
+
+  const interviews = recommendedInterviews.success
+    ? recommendedInterviews.recommendations
+    : [];
 
   return (
     <Card className="border-none shadow-none space-y-5">
@@ -30,7 +42,7 @@ const Recommendations = ({ recommendations, user }: RecommendationsProps) => {
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <RecommendedInterviews recommendations={recommendations} user={user} />
+        <RecommendedInterviews recommendations={interviews} user={userInfo} />
       </CardContent>
     </Card>
   );
