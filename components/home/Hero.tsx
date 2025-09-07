@@ -16,10 +16,10 @@ const Hero = () => {
               <span className="text-primary text-nowrap">AI-Driven</span>{" "}
               Practice & Feedback
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-lg">
+            <h2 className="text-lg text-gray-600 dark:text-gray-300 max-w-lg">
               Get ready for your next interview with practice questions and
               instant tips
-            </p>
+            </h2>
           </div>
           <SearchHero />
           {/* <div className="flex flex-col sm:flex-row gap-4">
