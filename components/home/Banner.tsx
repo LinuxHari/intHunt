@@ -9,13 +9,14 @@ const Banner = () => {
     <div className="rounded-xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20 border border-blue-100 dark:border-blue-900/20 shadow-sm duration-300 hover:shadow-lg">
       <div className="flex flex-wrap justify-center md:justify-start items-center gap-8">
         <div className="flex-shrink-0">
-          <div className="relative mt-10 md:mt-0 h-72 w-80 lg:w-60 lg:h-56 md:rounded-l-xl overflow-hidden">
+          <div className="relative mt-10 md:mt-0 md:rounded-l-xl overflow-hidden">
             <Image
               className="rounded-xl bg-primary/80 dark:bg-primary/90 lg:rounded-l-xl lg:rounded-r-none object-fill"
               src={BannerImage}
               alt="Professional interview platform banner"
-              fill
-              sizes="(max-width: 768px) 128px, (max-width: 1024px) 160px, 192px"
+              height={240}
+              width={224}
+              // sizes="(max-width: 768px) 128px, (max-width: 1024px) 160px, 192px"
             />
           </div>
         </div>

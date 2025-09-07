@@ -32,7 +32,7 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
       <div
         className={cn(
           "flex flex-col items-center gap-6 w-full",
-          isModal ? "bg-background md:px-5" : "card py-14 px-10"
+          isModal ? "bg-background md:px-2" : "card py-14 px-10"
         )}
       >
         <Logo />
@@ -133,13 +133,13 @@ const AuthForm = ({ type, isModal = false }: AuthFormProps) => {
           isModal ? (
             <a
               href="/forgot-password"
-              className="font-semibold text-primary hover:underline decoration-1"
+              className="text-sm text-primary hover:underline decoration-1"
             >
               Forgot password?
             </a>
           ) : (
             <Link
-              className="font-semibold text-primary hover:underline decoration-1"
+              className="text-sm text-primary hover:underline decoration-1"
               href="/forgot-password"
             >
               Forgot password?

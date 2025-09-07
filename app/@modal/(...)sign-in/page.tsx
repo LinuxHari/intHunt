@@ -8,7 +8,7 @@ const SignInModal = () => {
   const router = useRouter();
   return (
     <Dialog onOpenChange={router.back} open>
-      <DialogContent className="!min-w-fit">
+      <DialogContent className="!min-w-fit w-96">
         <DialogTitle className="hidden">Sign In</DialogTitle>
         <AuthForm type="sign-in" isModal />
       </DialogContent>
