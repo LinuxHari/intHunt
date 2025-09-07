@@ -1,7 +1,8 @@
-import cssnanoPlugin from "cssnano";
-
 const config = {
-  plugins: ["@tailwindcss/postcss", cssnanoPlugin({ preset: "default" })],
+  plugins: {
+    "@tailwindcss/postcss": {},
+    cssnano: {},
+  },
 };
 
 export default config;
