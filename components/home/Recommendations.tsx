@@ -34,6 +34,7 @@ const Recommendations = ({ recommendations, user }: RecommendationsProps) => {
           <div className="swiper-button-prev custom-nav after:hidden">
             <button
               id="swiper-prev"
+              aria-label="previous-interview"
               className="border border-primary p-1 rounded-full hover:bg-primary hover:text-white"
             >
               <ArrowLeft />
@@ -42,6 +43,7 @@ const Recommendations = ({ recommendations, user }: RecommendationsProps) => {
           <div className="swiper-button-next custom-nav after:hidden">
             <button
               id="swiper-next"
+              aria-label="next-interview"
               className="border border-primary p-1 rounded-full hover:bg-primary hover:text-white"
             >
               <ArrowRight />
