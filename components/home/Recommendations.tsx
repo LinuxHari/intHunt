@@ -22,6 +22,8 @@ const Recommendations = ({ recommendations, user }: RecommendationsProps) => {
     ? recommendedInterviews.recommendations
     : [];
 
+  if (!interviews.length) return null;
+
   return (
     <Card className="border-none shadow-none space-y-5">
       <CardHeader className="flex justify-between items-center p-0 relative space-y-0">
