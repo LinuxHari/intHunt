@@ -32,12 +32,18 @@ const Recommendations = ({ recommendations, user }: RecommendationsProps) => {
         </CardTitle>
         <div className="flex space-x-2">
           <div className="swiper-button-prev custom-nav after:hidden">
-            <button className="border border-primary p-1 rounded-full hover:bg-primary hover:text-white">
+            <button
+              id="swiper-prev"
+              className="border border-primary p-1 rounded-full hover:bg-primary hover:text-white"
+            >
               <ArrowLeft />
             </button>
           </div>
           <div className="swiper-button-next custom-nav after:hidden">
-            <button className="border border-primary p-1 rounded-full hover:bg-primary hover:text-white">
+            <button
+              id="swiper-next"
+              className="border border-primary p-1 rounded-full hover:bg-primary hover:text-white"
+            >
               <ArrowRight />
             </button>
           </div>
